@@ -18,9 +18,42 @@ Honeywell Quantum Solutions device class
 This module contains an abstract base class for constructing HQS devices for PennyLane.
 
 """
+import urllib
+
+import numpy as np
+
 from pennylane import QubitDevice
+from pennylane.operation import Sample
 
 from ._version import __version__
+
+OPENQASM_GATES = {
+    "CNOT": "cx",
+    "CZ": "cz",
+    "U3": "u3",
+    "U2": "u2",
+    "U1": "u1",
+    "Identity": "id",
+    "PauliX": "x",
+    "PauliY": "y",
+    "PauliZ": "z",
+    "Hadamard": "h",
+    "S": "s",
+    "S.inv": "sdg",
+    "T": "t",
+    "T.inv": "tdg",
+    "RX": "rx",
+    "RY": "ry",
+    "RZ": "rz",
+    "CRX": "crx",
+    "CRY": "cry",
+    "CRZ": "crz",
+    "SWAP": "swap",
+    "Toffoli": "ccx",
+    "CSWAP": "cswap",
+    "PhaseShift": "u1",
+}
+
 
 class HQSDevice(QubitDevice):
     r"""HQS device for PennyLane.
@@ -47,16 +80,7 @@ class HQSDevice(QubitDevice):
     }
 
     short_name = "hqs.base_device"
-    _operation_map = {
-        "RX": "X",
-        "RY": "Y",
-        "RZ": "Z",
-        "BasisState": None,
-        "PauliX": None,
-        "PauliY": None,
-        "PauliZ": None,
-        "Hadamard": None,
-    }
+    _operation_map = {**OPENQASM_GATES}
 
     BASE_HOSTNAME = ""
     TARGET_PATH = ""
@@ -111,6 +135,7 @@ class HQSDevice(QubitDevice):
 
         self._retry_delay = float(time)
 
+    @property
     def operations(self):
         """Get the supported set of operations.
 
@@ -119,5 +144,34 @@ class HQSDevice(QubitDevice):
         """
         return set(self._operation_map.keys())
 
+    def execute(self, circuit, **kwargs):
+
+        self.check_validity(circuit.operations, circuit.observables)
+
+        self._circuit_hash = circuit.hash
+
+        # TODO: verify rotations is working
+        circuit_str = circuit.to_openqasm()
+
+        # TODO: request and polling for results
+
+        # generate computational basis samples
+        self._samples = self.generate_samples()
+
+        # compute the required statistics
+        results = self.statistics(circuit.observables)
+
+        # Ensures that a combination with sample does not put
+        # expvals and vars in superfluous arrays
+        all_sampled = all(obs.return_type is Sample for obs in circuit.observables)
+        if circuit.is_sampled and not all_sampled:
+            return self._asarray(results, dtype="object")
+
+        return self._asarray(results)
+
+    def generate_samples(self):
+        return np.ones([self.shots, self.num_wires])
+
     def apply(self, operations, **kwargs):
+        """Abstract method must be overridden, but this is not used here."""
         pass
