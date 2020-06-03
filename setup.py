@@ -46,7 +46,7 @@ info = {
             # it corresponds to in the plugin. This allows
             # the device to be imported automatically via the
             # `pennylane.device` device loader.
-            "hqs.dev = pennylane_hqs:SomeDevice",
+            "hqs.dev = pennylane_hqs:HQSDevice",
         ]
     },
     # Place a one line description here. This will be shown by pip

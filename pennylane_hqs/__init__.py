@@ -15,3 +15,4 @@
 This is the top-level module from which all PennyLane-HQS device classes can be directly imported.
 """
 from ._version import __version__
+from .device import HQSDevice
