@@ -75,10 +75,49 @@ class HQSDevice(QubitDevice):
         pass
 
     def set_api_configs(self):
-        pass
+        """
+        Set the configurations needed to connect to HQS API.
+        """
+        self._api_key = self._api_key or os.getenv("HQS_TOKEN")
+        if not self._api_key:
+            raise ValueError("No valid api key for HQS platform found.")
+        self.header = {"User-Agent": "pennylane-hqs_v{}".format(__version__)}
+        self.hostname = urllib.parse.urljoin("{}/".format(self.BASE_HOSTNAME), self.TARGET_PATH)
 
-    def apply(self):
-        pass
+    @property
+    def retry_delay(self):
+        """
+        The time (in seconds) to wait between requests
+        to the remote server when checking for completion of circuit
+        execution.
+
+        """
+        return self._retry_delay
+
+    @retry_delay.setter
+    def retry_delay(self, time):
+        """Changes the devices's ``retry_delay`` property.
+
+        Args:
+            time (float): time (in seconds) to wait between calls to remote server
+
+        Raises:
+            DeviceError: if the retry delay is not a positive number
+        """
+        if time <= 0:
+            raise DeviceError(
+                "The specified retry delay needs to be positive. Got {}.".format(time)
+            )
+
+        self._retry_delay = float(time)
 
     def operations(self):
+        """Get the supported set of operations.
+
+        Returns:
+            set[str]: the set of PennyLane operation names the device supports
+        """
+        return set(self._operation_map.keys())
+
+    def apply(self, operations, **kwargs):
         pass
