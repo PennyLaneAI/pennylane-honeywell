@@ -1,1 +1,1 @@
-# pennylane-honeywell
+# pennylane-hqs
