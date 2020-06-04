@@ -18,7 +18,11 @@ Honeywell Quantum Solutions device class
 This module contains an abstract base class for constructing HQS devices for PennyLane.
 
 """
+import json
 import urllib
+import requests
+import warnings
+from time import sleep
 
 import numpy as np
 
@@ -82,11 +86,15 @@ class HQSDevice(QubitDevice):
     short_name = "hqs.base_device"
     _operation_map = {**OPENQASM_GATES}
 
-    BASE_HOSTNAME = ""
-    TARGET_PATH = ""
+    BASE_HOSTNAME = "https://qapi.honeywell.com/v1/"
+    TARGET_PATH = "job/"
     HTTP_METHOD = "POST"
+    TERMINAL_STATUSES = ["failed", "completed", "cancelled"]
+    PRIORITY = "normal"
+    LANGUAGE = "OPENQASM 2.0"
+    BACKEND = "HQS-LT-1.0-APIVAL"
 
-    def __init__(self, wires, shots=1000, api_key=None, retry_delay=0.05):
+    def __init__(self, wires, shots=1000, api_key=None, retry_delay=2):
         super().__init__(wires=wires, shots=shots, analytic=False)
         self.shots = shots
         self._retry_delay = retry_delay
@@ -96,6 +104,7 @@ class HQSDevice(QubitDevice):
 
     def reset(self):
         """Reset the device."""
+        # TODO: update this method
         pass
 
     def set_api_configs(self):
@@ -105,8 +114,11 @@ class HQSDevice(QubitDevice):
         self._api_key = self._api_key or os.getenv("HQS_TOKEN")
         if not self._api_key:
             raise ValueError("No valid api key for HQS platform found.")
-        self.header = {"User-Agent": "pennylane-hqs_v{}".format(__version__)}
-        self.hostname = urllib.parse.urljoin("{}/".format(self.BASE_HOSTNAME), self.TARGET_PATH)
+        self.header = {
+            "User-Agent": "pennylane-hqs_v{}".format(__version__),
+            "x-api-key": self._api_key,
+        }
+        self.hostname = urllib.parse.urljoin(self.BASE_HOSTNAME, self.TARGET_PATH)
 
     @property
     def retry_delay(self):
@@ -153,7 +165,43 @@ class HQSDevice(QubitDevice):
         # TODO: verify rotations is working
         circuit_str = circuit.to_openqasm()
 
-        # TODO: request and polling for results
+        body = {
+            "machine": self.BACKEND,
+            "language": self.LANGUAGE,
+            "program": circuit_str,
+            "priority": self.PRIORITY,
+            "count": self.shots,
+            "options": None,
+        }
+
+        response = requests.post(self.hostname, json.dumps(body), headers=self.header)
+        response.raise_for_status()
+
+        job_data = response.json()
+
+        job_id = job_data["job"]
+        job_endpoint = urllib.parse.urljoin(self.hostname, job_id)
+
+        while job_data["status"] not in self.TERMINAL_STATUSES:
+            sleep(self.retry_delay)
+            response = requests.get(job_endpoint, headers=self.header)
+            response.raise_for_status()
+
+            job_data = response.json()
+
+        if job_data["status"] == "failed":
+            raise qml.DeviceError("Job failed in remote backend.")
+        if job_data["status"] == "cancelled":
+            # possible to get a partial results back for cancelled jobs
+            try:
+                num_results = len(job_data["results"]["c"])
+                assert num_results > 0
+                if num_results < self.num_shots:
+                    warnings.warn("Partial results returned from cancelled remote job.")
+            except:
+                raise qml.DeviceError("Job was cancelled without returning any results.")
+
+        self._results = job_data["results"]["c"]  # list of binary strings
 
         # generate computational basis samples
         self._samples = self.generate_samples()
@@ -170,7 +218,10 @@ class HQSDevice(QubitDevice):
         return self._asarray(results)
 
     def generate_samples(self):
-        return np.ones([self.shots, self.num_wires])
+        int_values = [int(x) for x in self._results]
+        samples_array = np.stack(np.unravel_index(int_values, [2] * self.num_wires)).T
+        # TODO confirm precedence of bits in returned results
+        return samples_array
 
     def apply(self, operations, **kwargs):
         """Abstract method must be overridden, but this is not used here."""
