@@ -104,8 +104,15 @@ class HQSDevice(QubitDevice):
 
     def reset(self):
         """Reset the device."""
-        # TODO: update this method
-        pass
+        self.data = {
+            "machine": self.BACKEND,
+            "language": self.LANGUAGE,
+            "priority": self.PRIORITY,
+            "count": self.shots,
+            "options": None,
+        }
+        self._results = None
+        self._samples = None
 
     def set_api_configs(self):
         """
@@ -162,17 +169,9 @@ class HQSDevice(QubitDevice):
 
         self._circuit_hash = circuit.hash
 
-        # TODO: verify rotations is working
         circuit_str = circuit.to_openqasm()
 
-        body = {
-            "machine": self.BACKEND,
-            "language": self.LANGUAGE,
-            "program": circuit_str,
-            "priority": self.PRIORITY,
-            "count": self.shots,
-            "options": None,
-        }
+        body = {**self.data, "program": circuit_str}
 
         response = requests.post(self.hostname, json.dumps(body), headers=self.header)
         response.raise_for_status()
