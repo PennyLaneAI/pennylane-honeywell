@@ -20,7 +20,6 @@ This module contains an abstract base class for constructing HQS devices for Pen
 """
 import os
 import json
-import urllib
 import requests
 import warnings
 from time import sleep
@@ -87,8 +86,8 @@ class HQSDevice(QubitDevice):
     short_name = "hqs.base_device"
     _operation_map = {**OPENQASM_GATES}
 
-    BASE_HOSTNAME = "https://qapi.honeywell.com/v1/"
-    TARGET_PATH = "job/"
+    BASE_HOSTNAME = "https://qapi.honeywell.com/v1"
+    TARGET_PATH = "job"
     TERMINAL_STATUSES = ["failed", "completed", "cancelled"]
     PRIORITY = "normal"
     LANGUAGE = "OPENQASM 2.0"
@@ -126,7 +125,7 @@ class HQSDevice(QubitDevice):
             "User-Agent": "pennylane-hqs_v{}".format(__version__),
             self.API_HEADER_KEY: self._api_key,
         }
-        self.hostname = urllib.parse.urljoin(self.BASE_HOSTNAME, self.TARGET_PATH)
+        self.hostname = "/".join([self.BASE_HOSTNAME, self.TARGET_PATH])
 
     @property
     def retry_delay(self):
@@ -180,7 +179,7 @@ class HQSDevice(QubitDevice):
         job_data = response.json()
 
         job_id = job_data["job"]
-        job_endpoint = urllib.parse.urljoin(self.hostname, job_id)
+        job_endpoint = "/".join([self.hostname, job_id])
 
         while job_data["status"] not in self.TERMINAL_STATUSES:
             sleep(self.retry_delay)

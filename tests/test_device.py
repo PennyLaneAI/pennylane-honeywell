@@ -24,7 +24,7 @@ from pennylane_hqs.device import HQSDevice
 from pennylane_hqs import __version__
 
 API_HEADER_KEY = "x-api-key"
-BASE_HOSTNAME = "https://qapi.honeywell.com/v1/"
+BASE_HOSTNAME = "https://qapi.honeywell.com/v1"
 
 SOME_API_KEY = "ABC123"
 
@@ -138,7 +138,7 @@ class TestHQSDevice:
         dev = HQSDevice(3, api_key=SOME_API_KEY)
         new_api_key = "XYZ789"
         dev._api_key = new_api_key
-        dev.BASE_HOSTNAME = "https://server.someaddress.com/"
+        dev.BASE_HOSTNAME = "https://server.someaddress.com"
         dev.TARGET_PATH = "some/path"
         dev.set_api_configs()
 
