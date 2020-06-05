@@ -18,6 +18,7 @@ Honeywell Quantum Solutions device class
 This module contains an abstract base class for constructing HQS devices for PennyLane.
 
 """
+import os
 import json
 import urllib
 import requests
@@ -26,7 +27,7 @@ from time import sleep
 
 import numpy as np
 
-from pennylane import QubitDevice
+from pennylane import QubitDevice, DeviceError
 from pennylane.operation import Sample
 
 from ._version import __version__
@@ -88,11 +89,11 @@ class HQSDevice(QubitDevice):
 
     BASE_HOSTNAME = "https://qapi.honeywell.com/v1/"
     TARGET_PATH = "job/"
-    HTTP_METHOD = "POST"
     TERMINAL_STATUSES = ["failed", "completed", "cancelled"]
     PRIORITY = "normal"
     LANGUAGE = "OPENQASM 2.0"
     BACKEND = "HQS-LT-1.0-APIVAL"
+    API_HEADER_KEY = "x-api-key"
 
     def __init__(self, wires, shots=1000, api_key=None, retry_delay=2):
         super().__init__(wires=wires, shots=shots, analytic=False)
@@ -100,10 +101,6 @@ class HQSDevice(QubitDevice):
         self._retry_delay = retry_delay
         self._api_key = api_key
         self.set_api_configs()
-        self.reset()
-
-    def reset(self):
-        """Reset the device."""
         self.data = {
             "machine": self.BACKEND,
             "language": self.LANGUAGE,
@@ -111,6 +108,10 @@ class HQSDevice(QubitDevice):
             "count": self.shots,
             "options": None,
         }
+        self.reset()
+
+    def reset(self):
+        """Reset the device."""
         self._results = None
         self._samples = None
 
@@ -123,7 +124,7 @@ class HQSDevice(QubitDevice):
             raise ValueError("No valid api key for HQS platform found.")
         self.header = {
             "User-Agent": "pennylane-hqs_v{}".format(__version__),
-            "x-api-key": self._api_key,
+            self.API_HEADER_KEY: self._api_key,
         }
         self.hostname = urllib.parse.urljoin(self.BASE_HOSTNAME, self.TARGET_PATH)
 
@@ -189,16 +190,18 @@ class HQSDevice(QubitDevice):
             job_data = response.json()
 
         if job_data["status"] == "failed":
-            raise qml.DeviceError("Job failed in remote backend.")
+            raise DeviceError("Job failed in remote backend.")
         if job_data["status"] == "cancelled":
             # possible to get a partial results back for cancelled jobs
             try:
                 num_results = len(job_data["results"]["c"])
                 assert num_results > 0
-                if num_results < self.num_shots:
-                    warnings.warn("Partial results returned from cancelled remote job.")
+                if num_results < self.shots:
+                    warnings.warn(
+                        "Partial results returned from cancelled remote job.", RuntimeWarning
+                    )
             except:
-                raise qml.DeviceError("Job was cancelled without returning any results.")
+                raise DeviceError("Job was cancelled without returning any results.")
 
         self._results = job_data["results"]["c"]  # list of binary strings
 
@@ -212,16 +215,16 @@ class HQSDevice(QubitDevice):
         # expvals and vars in superfluous arrays
         all_sampled = all(obs.return_type is Sample for obs in circuit.observables)
         if circuit.is_sampled and not all_sampled:
-            return self._asarray(results, dtype="object")
+            return self._asarray(results, dtype="object")  # pragma: no cover
 
         return self._asarray(results)
 
     def generate_samples(self):
-        int_values = [int(x) for x in self._results]
+        int_values = [int(x, 2) for x in self._results]
         samples_array = np.stack(np.unravel_index(int_values, [2] * self.num_wires)).T
         # TODO confirm precedence of bits in returned results
         return samples_array
 
-    def apply(self, operations, **kwargs):
+    def apply(self, operations, **kwargs):  # pragma: no cover
         """Abstract method must be overridden, but this is not used here."""
         pass
