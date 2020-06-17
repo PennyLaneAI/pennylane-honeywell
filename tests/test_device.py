@@ -42,14 +42,22 @@ api_key = "{}"
     SOME_API_KEY
 )
 
-REF_SAMPLES_000 = [0, 0, 1]
 MOCK_RESULTS = ["00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+
+REF_RESULTS_01 = ["01"] * 10
+REF_RESULTS_10 = ["10"] * 10
+REF_RESULTS_001 = ["001"] * 10
+REF_RESULTS_010 = ["010"] * 10
+REF_RESULTS_011 = ["011"] * 10
+REF_RESULTS_100 = ["100"] * 10
+REF_RESULTS_101 = ["101"] * 10
+REF_RESULTS_110 = ["110"] * 10
 
 
 class MockResponse:
     def __init__(self):
         self.status_code = 200
-        self.mock_push_response = {
+        self.mock_post_response = {
             "job": "bf668869b6b74909a7e1fad2d7a0f932",
             "status": "queued",
         }
@@ -69,7 +77,7 @@ class MockResponse:
     def json(self):
         if self.num_calls == 0:
             self.num_calls = 1
-            return self.mock_push_response
+            return self.mock_post_response
         else:
             return self.mock_get_response
 
@@ -416,3 +424,36 @@ class TestHQSDeviceIntegration:
             circuit(0.5, 1.2)
 
         assert dev._results == ["00"] * 3
+
+    @pytest.mark.parametrize("wire_flip_idx, ref_result", [
+        ([1,0], REF_RESULTS_10),
+        ([0,1], REF_RESULTS_01),
+        ([1,0,0], REF_RESULTS_100),
+        ([1,1,0], REF_RESULTS_110),
+        ([1,0,1], REF_RESULTS_101),
+        ([0,1,0], REF_RESULTS_010),
+        ([0,0,1], REF_RESULTS_001),
+        ([0,1,1], REF_RESULTS_011),
+    ])
+    def test_reference_results_correct_expval(self, wire_flip_idx, ref_result, monkeypatch):
+        """Tests that a simple circuit with a known specific result from the platform leads to the proper
+        expectation value in PennyLane."""
+        num_wires = len(wire_flip_idx)
+        dev = qml.device("hqs.dev", wires=num_wires, shots=10, retry_delay=0.01, api_key=SOME_API_KEY)
+
+        # bit flip circuit
+        @qml.qnode(dev)
+        def circuit():
+            for w in wire_flip_idx:
+                if w:
+                    qml.PauliX(w)
+            return [qml.expval(qml.PauliZ(w)) for w in range(num_wires)]
+
+        mock_response = MockResponse()
+        mock_response.mock_get_response["results"] = {"c": ref_result}
+        monkeypatch.setattr(requests, "post", lambda *args, **kwargs: mock_response)
+        monkeypatch.setattr(requests, "get", lambda *args, **kwargs: mock_response)
+
+        res = circuit()
+        expected = (-1) ** np.array(wire_flip_idx)
+        assert np.all(expected == res)
