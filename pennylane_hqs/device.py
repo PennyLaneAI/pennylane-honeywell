@@ -20,9 +20,10 @@ This module contains an abstract base class for constructing HQS devices for Pen
 """
 import os
 import json
-import requests
 import warnings
 from time import sleep
+
+import requests
 
 import numpy as np
 
@@ -191,7 +192,7 @@ class HQSDevice(QubitDevice):
         if job_data["status"] == "failed":
             raise DeviceError("Job failed in remote backend.")
         if job_data["status"] == "cancelled":
-            # possible to get a partial results back for cancelled jobs
+            # possible to get partial results back for cancelled jobs
             try:
                 num_results = len(job_data["results"]["c"])
                 assert num_results > 0
@@ -202,6 +203,7 @@ class HQSDevice(QubitDevice):
             except:
                 raise DeviceError("Job was cancelled without returning any results.")
 
+        # pylint: disable=attribute-defined-outside-init
         self._results = job_data["results"]["c"]  # list of binary strings
 
         # generate computational basis samples
@@ -221,9 +223,7 @@ class HQSDevice(QubitDevice):
     def generate_samples(self):
         int_values = [int(x, 2) for x in self._results]
         samples_array = np.stack(np.unravel_index(int_values, [2] * self.num_wires)).T
-        # TODO confirm precedence of bits in returned results
         return samples_array
 
     def apply(self, operations, **kwargs):  # pragma: no cover
-        """Abstract method must be overridden, but this is not used here."""
-        pass
+        """This method is not used in the HQSDevice class."""

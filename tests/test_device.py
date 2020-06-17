@@ -425,21 +425,26 @@ class TestHQSDeviceIntegration:
 
         assert dev._results == ["00"] * 3
 
-    @pytest.mark.parametrize("wire_flip_idx, ref_result", [
-        ([1,0], REF_RESULTS_10),
-        ([0,1], REF_RESULTS_01),
-        ([1,0,0], REF_RESULTS_100),
-        ([1,1,0], REF_RESULTS_110),
-        ([1,0,1], REF_RESULTS_101),
-        ([0,1,0], REF_RESULTS_010),
-        ([0,0,1], REF_RESULTS_001),
-        ([0,1,1], REF_RESULTS_011),
-    ])
+    @pytest.mark.parametrize(
+        "wire_flip_idx, ref_result",
+        [
+            ([1, 0], REF_RESULTS_10),
+            ([0, 1], REF_RESULTS_01),
+            ([1, 0, 0], REF_RESULTS_100),
+            ([1, 1, 0], REF_RESULTS_110),
+            ([1, 0, 1], REF_RESULTS_101),
+            ([0, 1, 0], REF_RESULTS_010),
+            ([0, 0, 1], REF_RESULTS_001),
+            ([0, 1, 1], REF_RESULTS_011),
+        ],
+    )
     def test_reference_results_correct_expval(self, wire_flip_idx, ref_result, monkeypatch):
         """Tests that a simple circuit with a known specific result from the platform leads to the proper
         expectation value in PennyLane."""
         num_wires = len(wire_flip_idx)
-        dev = qml.device("hqs.dev", wires=num_wires, shots=10, retry_delay=0.01, api_key=SOME_API_KEY)
+        dev = qml.device(
+            "hqs.dev", wires=num_wires, shots=10, retry_delay=0.01, api_key=SOME_API_KEY
+        )
 
         # bit flip circuit
         @qml.qnode(dev)
