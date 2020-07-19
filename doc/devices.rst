@@ -13,7 +13,7 @@ Cloud ion-trap hardware
 This PennyLane device connects you to ion-trap hardware available from
 Honeywell Quantum Solutions.
 Once the plugin has been installed, you can use this device
-directly in PennyLane by specifying ``"hqs.dev"``, where ``"dev"`` is
+directly in PennyLane by specifying ``"hqs.dev"``, where ``dev`` is
 the name of the online hardware device you wish to access:
 
 .. code-block:: python
