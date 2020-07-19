@@ -89,7 +89,7 @@ The documentation can then be found in the ``doc/_build/html/`` directory.
 Getting started
 ===============
 
-Once PennyLane is installed, the provided HQS devices can be accessed straight
+Once PennyLane-HQS is installed, the provided HQS devices can be accessed straight
 away in PennyLane. However, the user will need access credentials for the HQS platform in order to
 use these remote devices. These credentials should be provided to PennyLane via a
 `configuration file or environment variable <https://pennylane.readthedocs.io/en/stable/introduction/configuration.html>`_.
@@ -102,7 +102,7 @@ You can instantiate the HQS devices for PennyLane as follows:
     import pennylane as qml
     dev1 = qml.device('hqs.dev', wires=2)
 
-where ``"dev"`` is the specific name of the online device you'd like to access.
+where ``dev`` is the specific name of the online device you'd like to access.
 
 HQS devices can then be used just like other devices for the definition and evaluation of
 quantum circuits within PennyLane. For more details and ideas, see the
