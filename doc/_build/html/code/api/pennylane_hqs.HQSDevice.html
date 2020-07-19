@@ -1,0 +1,1282 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+  <link href="https://fonts.googleapis.com/css?family=Noto+Serif" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+  <!-- Bootstrap core CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Material Design Bootstrap -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.14/css/mdb.min.css" rel="stylesheet">
+
+  <!-- nanoscroller -->
+  <link rel="stylesheet" type="text/css" href="../../_static/css/nanoscroller.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type="text/x-mathjax-config">
+     MathJax.Hub.Config({
+       "HTML-CSS": { scale: 90, linebreaks: { automatic: true } },
+       TeX: {
+         Macros: {
+           pr : ['|\#1\\rangle\\langle\#1|',1],
+           ket: ['\\left| \#1\\right\\rangle',1],
+           bra: ['\\left\\langle \#1\\right|',1],
+           xket: ['\\left| \#1\\right\\rangle_x',1],
+           xbra: ['\\left\\langle \#1\\right|_x',1],
+           braket: ['\\langle \#1 \\rangle',1],
+           braketD: ['\\langle \#1 \\mid \#2 \\rangle',2],
+           braketT: ['\\langle \#1 \\mid \#2 \\mid \#3 \\rangle',3],
+           ketbra: ['| #1 \\rangle \\langle #2 |',2],
+           hc: ['\\text{h.c.}',0],
+           cc: ['\\text{c.c.}',0],
+           h: ['\\hat',0],
+           nn: ['\\nonumber',0],
+           di: ['\\frac{d}{d \#1}',1],
+           uu: ['\\mathcal{U}',0],
+           inn: ['\\text{in}',0],
+           out: ['\\text{out}',0],
+           vac: ['\\text{vac}',0],
+           I: ['\\hat{\\mathbf{1}}',0],
+           x: ['\\hat{x}',0],
+           p: ['\\hat{p}',0],
+           a: ['\\hat{a}',0],
+           ad: ['\\hat{a}^\\dagger',0],
+           n: ['\\hat{n}',0],
+           nbar: ['\\overline{n}',0],
+           sech: ['\\mathrm{sech~}',0],
+           tanh: ['\\mathrm{tanh~}',0],
+           re: ['\\text{Re}',0],
+           im: ['\\text{Im}',0],
+           tr: ['\\mathrm{Tr} #1',1],
+           sign: ['\\text{sign}',0],
+           overlr: ['\\overset\\leftrightarrow{\#1}',1],
+           overl: ['\\overset\leftarrow{\#1}',1],
+           overr: ['\\overset\rightarrow{\#1}',1],
+           avg: ['\\left< \#1 \\right>',1],
+           slashed: ['\\cancel{\#1}',1],
+           bold: ['\\boldsymbol{\#1}',1],
+           d: ['\\mathrm d',0],
+           expect: ["\\langle #1 \\rangle",1],
+           pde: ["\\frac{\\partial}{\\partial \#1}",1],
+           R: ["\\mathbb{R}",0],
+           C: ["\\mathbb{C}",0],
+           Ad: ["\\text{Ad}",0],
+           Var: ["\\text{Var}",0],
+           bx: ["\\mathbf{x}", 0],
+           bm: ["\\boldsymbol{\#1}",1]
+         }
+       }
+     });
+     </script>
+  
+    <title>HQSDevice &#8212; PennyLane-HQS 0.10.0-dev0 documentation</title>
+    <link rel="stylesheet" href="../../_static/xanadu.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="pennylane_hqs" href="../__init__.html" /> 
+  </head><body><!--Navbar-->
+<nav class="navbar navbar-expand-lg navbar-light white sticky-top">
+
+  <!-- Navbar brand -->
+  <a class="navbar-brand" href="https://pennylane.ai">
+    <img class="pr-1" src="../../_static/xanadu_x.png" width="28px"></img>
+    <img src="../../_static/pennylane.png" width="180px"></img>
+  </a>
+
+  <!-- Collapse button -->
+  <div class="row right">
+  <a href="#" class="btn navbar-toggler black-text mr-1 justify-content-center" id="mobile-toggle">
+    <i class="fas fa-search"></i>
+  </a>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
+    aria-controls="basicExampleNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+</div>
+
+  <!-- Collapsible content -->
+  <div class="collapse navbar-collapse" id="basicExampleNav">
+
+    <!-- Links -->
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="https://pennylane.ai/qml">Quantum machine learning
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://pennylane.ai/install.html">Install</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="https://pennylane.ai/plugins.html">Plugins</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://pennylane.readthedocs.io">Documentation</a>
+          <span class="sr-only">(current)</span>
+      </li>
+    </ul>
+    <!-- Links -->
+
+    <ul class="navbar-nav ml-auto nav-flex-icons">
+      <li class="nav-item">
+        <a class="nav-link" href="https://pennylane.ai/faq.html">
+          <i class="fab fas fa-question"></i> FAQ
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://discuss.pennylane.ai">
+          <i class="fab fab fa-discourse"></i> Support
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://github.com/XanaduAI/pennyLane-hqs">
+          <i class="fab fa-github"></i> GitHub
+        </a>
+      </li>
+    </ul>
+  </div>
+  <!-- Collapsible content -->
+</nav>
+<!--/.Navbar-->
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../__init__.html" title="pennylane_hqs"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">PennyLane-HQS 0.10.0-dev0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../__init__.html" accesskey="U">pennylane_hqs</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+  <div id="left-column" class="nano css-transitions-only-after-page-load">
+    <div class="sphinxsidebar nano-content"><div class="sidebar-block search-block">
+  <div id="main-search">
+    <form action="../../search.html" method="GET" role="form">
+      <div class="md-input">
+        <input name="q" type="text" required>
+        <span class="bar"></span>
+        <label>Search</label>
+      </div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+  </div>
+</div>
+<div class="sidebar-block">
+<!--   <div class="sidebar-wrapper">
+    <h2>Table Of Contents</h2>
+  </div> -->
+  <div class="sidebar-toc">
+    <p class="caption">PennyLane-HQS</p>
+    <ul>
+      <li class="caption toctree-l1 ">
+        <a class="reference internal" href="../../index.html">Overview</a>
+      </li>
+    </ul>
+    
+    
+      <p class="caption"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../devices.html">Honeywell Quantum Solutions Devices</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../__init__.html">pennylane_hqs</a></li>
+</ul>
+
+    
+  </div>
+</div>
+      
+    </div>
+  </div>
+        <div id="content">
+          <div id="right-column">
+            
+            <div role="navigation" aria-label="breadcrumbs navigation">
+              <ol class="breadcrumb">
+                <li><a href="../../index.html">Docs</a></li>
+                
+                  <li><a href="../__init__.html">pennylane_hqs</a></li>
+                
+                <li>HQSDevice</li>
+              </ol>
+            </div>
+            
+            <div class="document clearer body">
+
+              
+  <div class="section" id="hqsdevice">
+<h1>HQSDevice<a class="headerlink" href="#hqsdevice" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pennylane_hqs.HQSDevice">
+<em class="property">class </em><code class="sig-name descname">HQSDevice</code><span class="sig-paren">(</span><em class="sig-param">wires</em>, <em class="sig-param">shots=1000</em>, <em class="sig-param">api_key=None</em>, <em class="sig-param">retry_delay=2</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pennylane_hqs/device.html#HQSDevice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pennylane_hqs.HQSDevice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pennylane._qubit_device.QubitDevice</span></code></p>
+<p>HQS device for PennyLane.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wires</strong> (<em>int</em>) – the number of wires to initialize the device with</p></li>
+<li><p><strong>shots</strong> (<em>int</em>) – number of circuit evaluations/random samples used
+to estimate expectation values of observables</p></li>
+<li><p><strong>api_key</strong> (<em>str</em>) – The HQS API key. If not provided, the environment
+variable <code class="docutils literal notranslate"><span class="pre">HQS_TOKEN</span></code> is used.</p></li>
+<li><p><strong>retry_delay</strong> (<em>float</em>) – The time (in seconds) to wait between requests
+to the remote server when checking for completion of circuit
+execution.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Attributes Summary</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.API_HEADER_KEY" title="pennylane_hqs.HQSDevice.API_HEADER_KEY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">API_HEADER_KEY</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.BACKEND" title="pennylane_hqs.HQSDevice.BACKEND"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BACKEND</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.BASE_HOSTNAME" title="pennylane_hqs.HQSDevice.BASE_HOSTNAME"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BASE_HOSTNAME</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.LANGUAGE" title="pennylane_hqs.HQSDevice.LANGUAGE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LANGUAGE</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.PRIORITY" title="pennylane_hqs.HQSDevice.PRIORITY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PRIORITY</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.TARGET_PATH" title="pennylane_hqs.HQSDevice.TARGET_PATH"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TARGET_PATH</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.TERMINAL_STATUSES" title="pennylane_hqs.HQSDevice.TERMINAL_STATUSES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TERMINAL_STATUSES</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.author" title="pennylane_hqs.HQSDevice.author"><code class="xref py py-obj docutils literal notranslate"><span class="pre">author</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.circuit_hash" title="pennylane_hqs.HQSDevice.circuit_hash"><code class="xref py py-obj docutils literal notranslate"><span class="pre">circuit_hash</span></code></a></p></td>
+<td><p>The hash of the circuit upon the last execution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.name" title="pennylane_hqs.HQSDevice.name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.obs_queue" title="pennylane_hqs.HQSDevice.obs_queue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">obs_queue</span></code></a></p></td>
+<td><p>The observables to be measured and returned.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.observables" title="pennylane_hqs.HQSDevice.observables"><code class="xref py py-obj docutils literal notranslate"><span class="pre">observables</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.op_queue" title="pennylane_hqs.HQSDevice.op_queue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">op_queue</span></code></a></p></td>
+<td><p>The operation queue to be applied.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.operations" title="pennylane_hqs.HQSDevice.operations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">operations</span></code></a></p></td>
+<td><p>Get the supported set of operations.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.parameters" title="pennylane_hqs.HQSDevice.parameters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parameters</span></code></a></p></td>
+<td><p>Mapping from free parameter index to the list of <code class="xref py py-class docutils literal notranslate"><span class="pre">Operations</span></code> in the device queue that depend on it.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.pennylane_requires" title="pennylane_hqs.HQSDevice.pennylane_requires"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pennylane_requires</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.retry_delay" title="pennylane_hqs.HQSDevice.retry_delay"><code class="xref py py-obj docutils literal notranslate"><span class="pre">retry_delay</span></code></a></p></td>
+<td><p>The time (in seconds) to wait between requests to the remote server when checking for completion of circuit execution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.short_name" title="pennylane_hqs.HQSDevice.short_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">short_name</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.shots" title="pennylane_hqs.HQSDevice.shots"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shots</span></code></a></p></td>
+<td><p>Number of circuit evaluations/random samples used to estimate expectation values of observables</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.state" title="pennylane_hqs.HQSDevice.state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">state</span></code></a></p></td>
+<td><p>Returns the state vector of the circuit prior to measurement.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.version" title="pennylane_hqs.HQSDevice.version"><code class="xref py py-obj docutils literal notranslate"><span class="pre">version</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods Summary</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.active_wires" title="pennylane_hqs.HQSDevice.active_wires"><code class="xref py py-obj docutils literal notranslate"><span class="pre">active_wires</span></code></a>(operators)</p></td>
+<td><p>Returns the wires acted on by a set of operators.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.analytic_probability" title="pennylane_hqs.HQSDevice.analytic_probability"><code class="xref py py-obj docutils literal notranslate"><span class="pre">analytic_probability</span></code></a>([wires])</p></td>
+<td><p>Return the (marginal) probability of each computational basis state from the last run of the device.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.apply" title="pennylane_hqs.HQSDevice.apply"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply</span></code></a>(operations, **kwargs)</p></td>
+<td><p>This method is not used in the HQSDevice class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.capabilities" title="pennylane_hqs.HQSDevice.capabilities"><code class="xref py py-obj docutils literal notranslate"><span class="pre">capabilities</span></code></a>()</p></td>
+<td><p>Get the capabilities of the plugin.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.check_validity" title="pennylane_hqs.HQSDevice.check_validity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_validity</span></code></a>(queue, observables)</p></td>
+<td><p>Checks whether the operations and observables in queue are all supported by the device.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.estimate_probability" title="pennylane_hqs.HQSDevice.estimate_probability"><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimate_probability</span></code></a>([wires])</p></td>
+<td><p>Return the estimated probability of each computational basis state using the generated samples.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.execute" title="pennylane_hqs.HQSDevice.execute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">execute</span></code></a>(circuit, **kwargs)</p></td>
+<td><p>Execute a queue of quantum operations on the device and then measure the given observables.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.execution_context" title="pennylane_hqs.HQSDevice.execution_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">execution_context</span></code></a>()</p></td>
+<td><p>The device execution context used during calls to <a class="reference internal" href="#pennylane_hqs.HQSDevice.execute" title="pennylane_hqs.HQSDevice.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">execute()</span></code></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.expval" title="pennylane_hqs.HQSDevice.expval"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expval</span></code></a>(observable)</p></td>
+<td><p>Returns the expectation value of observable on specified wires.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.generate_samples" title="pennylane_hqs.HQSDevice.generate_samples"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_samples</span></code></a>()</p></td>
+<td><p>Returns the computational basis samples generated for all wires.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.marginal_prob" title="pennylane_hqs.HQSDevice.marginal_prob"><code class="xref py py-obj docutils literal notranslate"><span class="pre">marginal_prob</span></code></a>(prob[, wires])</p></td>
+<td><p>Return the marginal probability of the computational basis states by summing the probabiliites on the non-specified wires.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.post_apply" title="pennylane_hqs.HQSDevice.post_apply"><code class="xref py py-obj docutils literal notranslate"><span class="pre">post_apply</span></code></a>()</p></td>
+<td><p>Called during <a class="reference internal" href="#pennylane_hqs.HQSDevice.execute" title="pennylane_hqs.HQSDevice.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">execute()</span></code></a> after the individual operations have been executed.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.post_measure" title="pennylane_hqs.HQSDevice.post_measure"><code class="xref py py-obj docutils literal notranslate"><span class="pre">post_measure</span></code></a>()</p></td>
+<td><p>Called during <a class="reference internal" href="#pennylane_hqs.HQSDevice.execute" title="pennylane_hqs.HQSDevice.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">execute()</span></code></a> after the individual observables have been measured.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.pre_apply" title="pennylane_hqs.HQSDevice.pre_apply"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pre_apply</span></code></a>()</p></td>
+<td><p>Called during <a class="reference internal" href="#pennylane_hqs.HQSDevice.execute" title="pennylane_hqs.HQSDevice.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">execute()</span></code></a> before the individual operations are executed.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.pre_measure" title="pennylane_hqs.HQSDevice.pre_measure"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pre_measure</span></code></a>()</p></td>
+<td><p>Called during <a class="reference internal" href="#pennylane_hqs.HQSDevice.execute" title="pennylane_hqs.HQSDevice.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">execute()</span></code></a> before the individual observables are measured.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.probability" title="pennylane_hqs.HQSDevice.probability"><code class="xref py py-obj docutils literal notranslate"><span class="pre">probability</span></code></a>([wires])</p></td>
+<td><p>Return either the analytic probability or estimated probability of each computational basis state.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.reset" title="pennylane_hqs.HQSDevice.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
+<td><p>Reset the device.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.sample" title="pennylane_hqs.HQSDevice.sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample</span></code></a>(observable)</p></td>
+<td><p>Return a sample of an observable.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.sample_basis_states" title="pennylane_hqs.HQSDevice.sample_basis_states"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_basis_states</span></code></a>(number_of_states, …)</p></td>
+<td><p>Sample from the computational basis states based on the state probability.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.set_api_configs" title="pennylane_hqs.HQSDevice.set_api_configs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_api_configs</span></code></a>()</p></td>
+<td><p>Set the configurations needed to connect to HQS API.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.states_to_binary" title="pennylane_hqs.HQSDevice.states_to_binary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">states_to_binary</span></code></a>(samples, num_wires)</p></td>
+<td><p>Convert basis states from base 10 to binary representation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.statistics" title="pennylane_hqs.HQSDevice.statistics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">statistics</span></code></a>(observables)</p></td>
+<td><p>Process measurement results from circuit execution and return statistics.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.supports_observable" title="pennylane_hqs.HQSDevice.supports_observable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">supports_observable</span></code></a>(observable)</p></td>
+<td><p>Checks if an observable is supported by this device. Raises a ValueError,</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.supports_operation" title="pennylane_hqs.HQSDevice.supports_operation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">supports_operation</span></code></a>(operation)</p></td>
+<td><p>Checks if an operation is supported by this device.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.var" title="pennylane_hqs.HQSDevice.var"><code class="xref py py-obj docutils literal notranslate"><span class="pre">var</span></code></a>(observable)</p></td>
+<td><p>Returns the variance of observable on specified wires.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes Documentation</p>
+<dl class="attribute">
+<dt id="pennylane_hqs.HQSDevice.API_HEADER_KEY">
+<code class="sig-name descname">API_HEADER_KEY</code><em class="property"> = 'x-api-key'</em><a class="headerlink" href="#pennylane_hqs.HQSDevice.API_HEADER_KEY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pennylane_hqs.HQSDevice.BACKEND">
+<code class="sig-name descname">BACKEND</code><em class="property"> = 'HQS-LT-1.0-APIVAL'</em><a class="headerlink" href="#pennylane_hqs.HQSDevice.BACKEND" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pennylane_hqs.HQSDevice.BASE_HOSTNAME">
+<code class="sig-name descname">BASE_HOSTNAME</code><em class="property"> = 'https://qapi.honeywell.com/v1'</em><a class="headerlink" href="#pennylane_hqs.HQSDevice.BASE_HOSTNAME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pennylane_hqs.HQSDevice.LANGUAGE">
+<code class="sig-name descname">LANGUAGE</code><em class="property"> = 'OPENQASM 2.0'</em><a class="headerlink" href="#pennylane_hqs.HQSDevice.LANGUAGE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pennylane_hqs.HQSDevice.PRIORITY">
+<code class="sig-name descname">PRIORITY</code><em class="property"> = 'normal'</em><a class="headerlink" href="#pennylane_hqs.HQSDevice.PRIORITY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pennylane_hqs.HQSDevice.TARGET_PATH">
+<code class="sig-name descname">TARGET_PATH</code><em class="property"> = 'job'</em><a class="headerlink" href="#pennylane_hqs.HQSDevice.TARGET_PATH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pennylane_hqs.HQSDevice.TERMINAL_STATUSES">
+<code class="sig-name descname">TERMINAL_STATUSES</code><em class="property"> = ['failed', 'completed', 'cancelled']</em><a class="headerlink" href="#pennylane_hqs.HQSDevice.TERMINAL_STATUSES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pennylane_hqs.HQSDevice.author">
+<code class="sig-name descname">author</code><em class="property"> = 'Xanadu Inc.'</em><a class="headerlink" href="#pennylane_hqs.HQSDevice.author" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pennylane_hqs.HQSDevice.circuit_hash">
+<code class="sig-name descname">circuit_hash</code><a class="headerlink" href="#pennylane_hqs.HQSDevice.circuit_hash" title="Permalink to this definition">¶</a></dt>
+<dd><p>The hash of the circuit upon the last execution.</p>
+<p>This can be used by devices in <a class="reference internal" href="#pennylane_hqs.HQSDevice.apply" title="pennylane_hqs.HQSDevice.apply"><code class="xref py py-meth docutils literal notranslate"><span class="pre">apply()</span></code></a> for parametric compilation.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pennylane_hqs.HQSDevice.name">
+<code class="sig-name descname">name</code><em class="property"> = 'Honeywell Quantum Solutions PennyLane plugin'</em><a class="headerlink" href="#pennylane_hqs.HQSDevice.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pennylane_hqs.HQSDevice.obs_queue">
+<code class="sig-name descname">obs_queue</code><a class="headerlink" href="#pennylane_hqs.HQSDevice.obs_queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>The observables to be measured and returned.</p>
+<p>Note that this property can only be accessed within the execution context
+of <a class="reference internal" href="#pennylane_hqs.HQSDevice.execute" title="pennylane_hqs.HQSDevice.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">execute()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – if outside of the execution context</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list[~.operation.Observable]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pennylane_hqs.HQSDevice.observables">
+<code class="sig-name descname">observables</code><em class="property"> = {'Hadamard', 'Hermitian', 'Identity', 'PauliX', 'PauliY', 'PauliZ'}</em><a class="headerlink" href="#pennylane_hqs.HQSDevice.observables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pennylane_hqs.HQSDevice.op_queue">
+<code class="sig-name descname">op_queue</code><a class="headerlink" href="#pennylane_hqs.HQSDevice.op_queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>The operation queue to be applied.</p>
+<p>Note that this property can only be accessed within the execution context
+of <a class="reference internal" href="#pennylane_hqs.HQSDevice.execute" title="pennylane_hqs.HQSDevice.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">execute()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – if outside of the execution context</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list[~.operation.Operation]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pennylane_hqs.HQSDevice.operations">
+<code class="sig-name descname">operations</code><a class="headerlink" href="#pennylane_hqs.HQSDevice.operations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the supported set of operations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the set of PennyLane operation names the device supports</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>set[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pennylane_hqs.HQSDevice.parameters">
+<code class="sig-name descname">parameters</code><a class="headerlink" href="#pennylane_hqs.HQSDevice.parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mapping from free parameter index to the list of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Operations</span></code> in the device queue that depend on it.</p>
+<p>Note that this property can only be accessed within the execution context
+of <a class="reference internal" href="#pennylane_hqs.HQSDevice.execute" title="pennylane_hqs.HQSDevice.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">execute()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – if outside of the execution context</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the mapping</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict[int-&gt;list[ParameterDependency]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pennylane_hqs.HQSDevice.pennylane_requires">
+<code class="sig-name descname">pennylane_requires</code><em class="property"> = '&gt;=0.9.0'</em><a class="headerlink" href="#pennylane_hqs.HQSDevice.pennylane_requires" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pennylane_hqs.HQSDevice.retry_delay">
+<code class="sig-name descname">retry_delay</code><a class="headerlink" href="#pennylane_hqs.HQSDevice.retry_delay" title="Permalink to this definition">¶</a></dt>
+<dd><p>The time (in seconds) to wait between requests
+to the remote server when checking for completion of circuit
+execution.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pennylane_hqs.HQSDevice.short_name">
+<code class="sig-name descname">short_name</code><em class="property"> = 'hqs.base_device'</em><a class="headerlink" href="#pennylane_hqs.HQSDevice.short_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pennylane_hqs.HQSDevice.shots">
+<code class="sig-name descname">shots</code><a class="headerlink" href="#pennylane_hqs.HQSDevice.shots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of circuit evaluations/random samples used to estimate
+expectation values of observables</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pennylane_hqs.HQSDevice.state">
+<code class="sig-name descname">state</code><a class="headerlink" href="#pennylane_hqs.HQSDevice.state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the state vector of the circuit prior to measurement.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only state vector simulators support this property. Please see the
+plugin documentation for more details.</p>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pennylane_hqs.HQSDevice.version">
+<code class="sig-name descname">version</code><em class="property"> = '0.10.0-dev0'</em><a class="headerlink" href="#pennylane_hqs.HQSDevice.version" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods Documentation</p>
+<dl class="method">
+<dt id="pennylane_hqs.HQSDevice.active_wires">
+<em class="property">static </em><code class="sig-name descname">active_wires</code><span class="sig-paren">(</span><em class="sig-param">operators</em><span class="sig-paren">)</span><a class="headerlink" href="#pennylane_hqs.HQSDevice.active_wires" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the wires acted on by a set of operators.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>operators</strong> (<em>list</em><em>[</em><em>Operation</em><em>]</em>) – operators for which
+we are gathering the active wires</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the set of wires activated by the specified operators</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>set[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pennylane_hqs.HQSDevice.analytic_probability">
+<code class="sig-name descname">analytic_probability</code><span class="sig-paren">(</span><em class="sig-param">wires=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pennylane_hqs.HQSDevice.analytic_probability" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the (marginal) probability of each computational basis
+state from the last run of the device.</p>
+<p>PennyLane uses the convention
+<span class="math notranslate nohighlight">\(|q_0,q_1,\dots,q_{N-1}\rangle\)</span> where <span class="math notranslate nohighlight">\(q_0\)</span> is the most
+significant bit.</p>
+<p>If no wires are specified, then all the basis states representable by
+the device are considered and no marginalization takes place.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#pennylane_hqs.HQSDevice.marginal_prob" title="pennylane_hqs.HQSDevice.marginal_prob"><code class="xref py py-meth docutils literal notranslate"><span class="pre">marginal_prob()</span></code></a> may be used as a utility method
+to calculate the marginal probability distribution.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>wires</strong> (<em>Sequence</em><em>[</em><em>int</em><em>]</em>) – Sequence of wires to return
+marginal probabilities for. Wires not provided
+are traced out of the system.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of the probabilities</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pennylane_hqs.HQSDevice.apply">
+<code class="sig-name descname">apply</code><span class="sig-paren">(</span><em class="sig-param">operations</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pennylane_hqs/device.html#HQSDevice.apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pennylane_hqs.HQSDevice.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method is not used in the HQSDevice class.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pennylane_hqs.HQSDevice.capabilities">
+<em class="property">classmethod </em><code class="sig-name descname">capabilities</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pennylane_hqs.HQSDevice.capabilities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the capabilities of the plugin.</p>
+<p>Capabilities include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;model&quot;</span></code> (<em>str</em>): either <code class="docutils literal notranslate"><span class="pre">&quot;qubit&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;CV&quot;</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;inverse_operations&quot;</span></code> (<em>bool</em>): <code class="docutils literal notranslate"><span class="pre">True</span></code> if the device supports
+applying the inverse of operations. Operations which should be inverted
+have <code class="docutils literal notranslate"><span class="pre">operation.inverse</span> <span class="pre">==</span> <span class="pre">True</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;tensor_observables&quot;</span> <span class="pre">(*bool*):</span> <span class="pre">``True</span></code> if the device supports
+expectation values/variance/samples of <code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code> observables.</p></li>
+</ul>
+<p>The qubit device class has built-in support for tensor observables. As a
+result, devices that inherit from this class automatically
+have the following items in their capabilities
+dictionary:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;model&quot;:</span> <span class="pre">&quot;qubit&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;tensor_observables&quot;:</span> <span class="pre">True</span></code></p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>results</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict[str-&gt;*]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pennylane_hqs.HQSDevice.check_validity">
+<code class="sig-name descname">check_validity</code><span class="sig-paren">(</span><em class="sig-param">queue</em>, <em class="sig-param">observables</em><span class="sig-paren">)</span><a class="headerlink" href="#pennylane_hqs.HQSDevice.check_validity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether the operations and observables in queue are all supported by the device.
+Includes checks for inverse operations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>queue</strong> (<em>Iterable</em><em>[</em><em>Operation</em><em>]</em>) – quantum operation objects which are intended
+to be applied on the device</p></li>
+<li><p><strong>observables</strong> (<em>Iterable</em><em>[</em><em>Observable</em><em>]</em>) – observables which are intended
+to be evaluated on the device</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>DeviceError</strong> – if there are operations in the queue or observables that the device does
+    not support</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pennylane_hqs.HQSDevice.estimate_probability">
+<code class="sig-name descname">estimate_probability</code><span class="sig-paren">(</span><em class="sig-param">wires=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pennylane_hqs.HQSDevice.estimate_probability" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the estimated probability of each computational basis state
+using the generated samples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>wires</strong> (<em>Sequence</em><em>[</em><em>int</em><em>]</em>) – Sequence of wires to return
+marginal probabilities for. Wires not provided
+are traced out of the system.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of the probabilities</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pennylane_hqs.HQSDevice.execute">
+<code class="sig-name descname">execute</code><span class="sig-paren">(</span><em class="sig-param">circuit</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pennylane_hqs/device.html#HQSDevice.execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pennylane_hqs.HQSDevice.execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute a queue of quantum operations on the device and then
+measure the given observables.</p>
+<p>For plugin developers: instead of overwriting this, consider
+implementing a suitable subset of</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.apply" title="pennylane_hqs.HQSDevice.apply"><code class="xref py py-meth docutils literal notranslate"><span class="pre">apply()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.generate_samples" title="pennylane_hqs.HQSDevice.generate_samples"><code class="xref py py-meth docutils literal notranslate"><span class="pre">generate_samples()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pennylane_hqs.HQSDevice.probability" title="pennylane_hqs.HQSDevice.probability"><code class="xref py py-meth docutils literal notranslate"><span class="pre">probability()</span></code></a></p></li>
+</ul>
+<p>Additional keyword arguments may be passed to the this method
+that can be utilised by <a class="reference internal" href="#pennylane_hqs.HQSDevice.apply" title="pennylane_hqs.HQSDevice.apply"><code class="xref py py-meth docutils literal notranslate"><span class="pre">apply()</span></code></a>. An example would be passing
+the <code class="docutils literal notranslate"><span class="pre">QNode</span></code> hash that can be used later for parametric compilation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>circuit</strong> (<em>CircuitGraph</em>) – circuit to execute on the device</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>QuantumFunctionError</strong> – if the value of <code class="xref py py-attr docutils literal notranslate"><span class="pre">return_type</span></code> is not supported</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>measured value(s)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>array[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pennylane_hqs.HQSDevice.execution_context">
+<code class="sig-name descname">execution_context</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pennylane_hqs.HQSDevice.execution_context" title="Permalink to this definition">¶</a></dt>
+<dd><p>The device execution context used during calls to <a class="reference internal" href="#pennylane_hqs.HQSDevice.execute" title="pennylane_hqs.HQSDevice.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">execute()</span></code></a>.</p>
+<p>You can overwrite this function to return a context manager in case your
+quantum library requires that;
+all operations and method calls (including <a class="reference internal" href="#pennylane_hqs.HQSDevice.apply" title="pennylane_hqs.HQSDevice.apply"><code class="xref py py-meth docutils literal notranslate"><span class="pre">apply()</span></code></a> and <a class="reference internal" href="#pennylane_hqs.HQSDevice.expval" title="pennylane_hqs.HQSDevice.expval"><code class="xref py py-meth docutils literal notranslate"><span class="pre">expval()</span></code></a>)
+are then evaluated within the context of this context manager (see the
+source of <code class="xref py py-meth docutils literal notranslate"><span class="pre">Device.execute()</span></code> for more details).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pennylane_hqs.HQSDevice.expval">
+<code class="sig-name descname">expval</code><span class="sig-paren">(</span><em class="sig-param">observable</em><span class="sig-paren">)</span><a class="headerlink" href="#pennylane_hqs.HQSDevice.expval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the expectation value of observable on specified wires.</p>
+<p>Note: all arguments accept _lists_, which indicate a tensor
+product of observables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observable</strong> (<em>str</em><em> or </em><em>list</em><em>[</em><em>str</em><em>]</em>) – name of the observable(s)</p></li>
+<li><p><strong>wires</strong> (<em>List</em><em>[</em><em>int</em><em>] or </em><em>List</em><em>[</em><em>List</em><em>[</em><em>int</em><em>]</em><em>]</em>) – subsystems the observable(s) is to be measured on</p></li>
+<li><p><strong>par</strong> (<em>tuple</em><em> or </em><em>list</em><em>[</em><em>tuple</em><em>]</em><em>]</em>) – parameters for the observable(s)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>expectation value <span class="math notranslate nohighlight">\(\expect{A} = \bra{\psi}A\ket{\psi}\)</span></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pennylane_hqs.HQSDevice.generate_samples">
+<code class="sig-name descname">generate_samples</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pennylane_hqs/device.html#HQSDevice.generate_samples"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pennylane_hqs.HQSDevice.generate_samples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the computational basis samples generated for all wires.</p>
+<p>Note that PennyLane uses the convention <span class="math notranslate nohighlight">\(|q_0,q_1,\dots,q_{N-1}\rangle\)</span> where
+<span class="math notranslate nohighlight">\(q_0\)</span> is the most significant bit.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method should be overwritten on devices that
+generate their own computational basis samples, with the resulting
+computational basis samples stored as <code class="docutils literal notranslate"><span class="pre">self._samples</span></code>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>array of samples in the shape <code class="docutils literal notranslate"><span class="pre">(dev.shots,</span> <span class="pre">dev.num_wires)</span></code></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>array[complex]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pennylane_hqs.HQSDevice.marginal_prob">
+<code class="sig-name descname">marginal_prob</code><span class="sig-paren">(</span><em class="sig-param">prob</em>, <em class="sig-param">wires=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pennylane_hqs.HQSDevice.marginal_prob" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the marginal probability of the computational basis
+states by summing the probabiliites on the non-specified wires.</p>
+<p>If no wires are specified, then all the basis states representable by
+the device are considered and no marginalization takes place.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the provided wires are not strictly increasing, the returned marginal
+probabilities take this permuation into account.</p>
+<p>For example, if <code class="docutils literal notranslate"><span class="pre">wires=[2,</span> <span class="pre">0]</span></code>, then the returned marginal
+probability vector will take this ‘reversal’ of the two wires
+into account:</p>
+<div class="math notranslate nohighlight">
+\[\mathbb{P}^{(2, 0)}
+            = \left[
+               |00\rangle, |10\rangle, |01\rangle, |11\rangle
+              \right]\]</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prob</strong> – The probabilities to return the marginal probabilities
+for</p></li>
+<li><p><strong>wires</strong> (<em>Sequence</em><em>[</em><em>int</em><em>]</em>) – Sequence of wires to return
+marginal probabilities for. Wires not provided
+are traced out of the system.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array of the resulting marginal probabilities.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>array[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pennylane_hqs.HQSDevice.post_apply">
+<code class="sig-name descname">post_apply</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pennylane_hqs.HQSDevice.post_apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called during <a class="reference internal" href="#pennylane_hqs.HQSDevice.execute" title="pennylane_hqs.HQSDevice.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">execute()</span></code></a> after the individual operations have been executed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pennylane_hqs.HQSDevice.post_measure">
+<code class="sig-name descname">post_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pennylane_hqs.HQSDevice.post_measure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called during <a class="reference internal" href="#pennylane_hqs.HQSDevice.execute" title="pennylane_hqs.HQSDevice.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">execute()</span></code></a> after the individual observables have been measured.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pennylane_hqs.HQSDevice.pre_apply">
+<code class="sig-name descname">pre_apply</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pennylane_hqs.HQSDevice.pre_apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called during <a class="reference internal" href="#pennylane_hqs.HQSDevice.execute" title="pennylane_hqs.HQSDevice.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">execute()</span></code></a> before the individual operations are executed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pennylane_hqs.HQSDevice.pre_measure">
+<code class="sig-name descname">pre_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pennylane_hqs.HQSDevice.pre_measure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called during <a class="reference internal" href="#pennylane_hqs.HQSDevice.execute" title="pennylane_hqs.HQSDevice.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">execute()</span></code></a> before the individual observables are measured.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pennylane_hqs.HQSDevice.probability">
+<code class="sig-name descname">probability</code><span class="sig-paren">(</span><em class="sig-param">wires=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pennylane_hqs.HQSDevice.probability" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return either the analytic probability or estimated probability of
+each computational basis state.</p>
+<p>If no <code class="xref py py-attr docutils literal notranslate"><span class="pre">analytic</span></code> attributes exists for the device, then return the
+estimated probability.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>wires</strong> (<em>Sequence</em><em>[</em><em>int</em><em>]</em>) – Sequence of wires to return
+marginal probabilities for. Wires not provided
+are traced out of the system.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of the probabilities</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pennylane_hqs.HQSDevice.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pennylane_hqs/device.html#HQSDevice.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pennylane_hqs.HQSDevice.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the device.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pennylane_hqs.HQSDevice.sample">
+<code class="sig-name descname">sample</code><span class="sig-paren">(</span><em class="sig-param">observable</em><span class="sig-paren">)</span><a class="headerlink" href="#pennylane_hqs.HQSDevice.sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a sample of an observable.</p>
+<p>The number of samples is determined by the value of <code class="docutils literal notranslate"><span class="pre">Device.shots</span></code>,
+which can be directly modified.</p>
+<p>Note: all arguments support _lists_, which indicate a tensor
+product of observables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observable</strong> (<em>str</em><em> or </em><em>list</em><em>[</em><em>str</em><em>]</em>) – name of the observable(s)</p></li>
+<li><p><strong>wires</strong> (<em>List</em><em>[</em><em>int</em><em>] or </em><em>List</em><em>[</em><em>List</em><em>[</em><em>int</em><em>]</em><em>]</em>) – subsystems the observable(s) is to be measured on</p></li>
+<li><p><strong>par</strong> (<em>tuple</em><em> or </em><em>list</em><em>[</em><em>tuple</em><em>]</em><em>]</em>) – parameters for the observable(s)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – if the device does not support sampling</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>samples in an array of dimension <code class="docutils literal notranslate"><span class="pre">(shots,)</span></code></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>array[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pennylane_hqs.HQSDevice.sample_basis_states">
+<code class="sig-name descname">sample_basis_states</code><span class="sig-paren">(</span><em class="sig-param">number_of_states</em>, <em class="sig-param">state_probability</em><span class="sig-paren">)</span><a class="headerlink" href="#pennylane_hqs.HQSDevice.sample_basis_states" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sample from the computational basis states based on the state
+probability.</p>
+<p>This is an auxiliary method to the generate_samples method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>number_of_states</strong> (<em>int</em>) – the number of basis states to sample from</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the sampled basis states</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pennylane_hqs.HQSDevice.set_api_configs">
+<code class="sig-name descname">set_api_configs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pennylane_hqs/device.html#HQSDevice.set_api_configs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pennylane_hqs.HQSDevice.set_api_configs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the configurations needed to connect to HQS API.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pennylane_hqs.HQSDevice.states_to_binary">
+<em class="property">static </em><code class="sig-name descname">states_to_binary</code><span class="sig-paren">(</span><em class="sig-param">samples</em>, <em class="sig-param">num_wires</em><span class="sig-paren">)</span><a class="headerlink" href="#pennylane_hqs.HQSDevice.states_to_binary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert basis states from base 10 to binary representation.</p>
+<p>This is an auxiliary method to the generate_samples method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>samples</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – samples of basis states in base 10 representation</p></li>
+<li><p><strong>number_of_states</strong> (<em>int</em>) – the number of basis states to sample from</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>basis states in binary representation</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pennylane_hqs.HQSDevice.statistics">
+<code class="sig-name descname">statistics</code><span class="sig-paren">(</span><em class="sig-param">observables</em><span class="sig-paren">)</span><a class="headerlink" href="#pennylane_hqs.HQSDevice.statistics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process measurement results from circuit execution and return statistics.</p>
+<p>This includes returning expectation values, variance, samples and probabilities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>observables</strong> (List[<code class="xref py py-class docutils literal notranslate"><span class="pre">Observable</span></code>]) – the observables to be measured</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>QuantumFunctionError</strong> – if the value of <code class="xref py py-attr docutils literal notranslate"><span class="pre">return_type</span></code> is not supported</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the corresponding statistics</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Union[float, List[float]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pennylane_hqs.HQSDevice.supports_observable">
+<code class="sig-name descname">supports_observable</code><span class="sig-paren">(</span><em class="sig-param">observable</em><span class="sig-paren">)</span><a class="headerlink" href="#pennylane_hqs.HQSDevice.supports_observable" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Checks if an observable is supported by this device. Raises a ValueError,</dt><dd><p>if not a subclass or string of an Observable was passed.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>observable</strong> (<em>type</em><em> or </em><em>str</em>) – observable to be checked</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – if <cite>observable</cite> is not a <code class="xref py py-class docutils literal notranslate"><span class="pre">Observable</span></code> class or string</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> iff supplied observable is supported</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pennylane_hqs.HQSDevice.supports_operation">
+<code class="sig-name descname">supports_operation</code><span class="sig-paren">(</span><em class="sig-param">operation</em><span class="sig-paren">)</span><a class="headerlink" href="#pennylane_hqs.HQSDevice.supports_operation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if an operation is supported by this device.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>operation</strong> (<em>type</em><em> or </em><em>str</em>) – operation to be checked</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – if <cite>operation</cite> is not a <code class="xref py py-class docutils literal notranslate"><span class="pre">Operation</span></code> class or string</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> iff supplied operation is supported</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pennylane_hqs.HQSDevice.var">
+<code class="sig-name descname">var</code><span class="sig-paren">(</span><em class="sig-param">observable</em><span class="sig-paren">)</span><a class="headerlink" href="#pennylane_hqs.HQSDevice.var" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the variance of observable on specified wires.</p>
+<p>Note: all arguments support _lists_, which indicate a tensor
+product of observables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observable</strong> (<em>str</em><em> or </em><em>list</em><em>[</em><em>str</em><em>]</em>) – name of the observable(s)</p></li>
+<li><p><strong>wires</strong> (<em>List</em><em>[</em><em>int</em><em>] or </em><em>List</em><em>[</em><em>List</em><em>[</em><em>int</em><em>]</em><em>]</em>) – subsystems the observable(s) is to be measured on</p></li>
+<li><p><strong>par</strong> (<em>tuple</em><em> or </em><em>list</em><em>[</em><em>tuple</em><em>]</em><em>]</em>) – parameters for the observable(s)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – if the device does not support variance computation</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>variance <span class="math notranslate nohighlight">\(\mathrm{var}(A) = \bra{\psi}A^2\ket{\psi} - \bra{\psi}A\ket{\psi}^2\)</span></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+            </div>
+              
+  <div class="footer-relations">
+    
+      <div class="pull-left">
+        <a class="btn btn-xanadu" href="../__init__.html" title="previous chapter (use the left arrow)"><i class="fas fa-arrow-left"></i> Previous</a>
+      </div>
+    
+    </div>
+    <div class="clearer"></div>
+  
+          </div>
+<div class="comment-container nano has-scrollbar">
+  <div class="nano-content">
+  <div id="comments">
+    <h3>Contents</h3>
+    
+    
+      <ul style="display: none;"><li><a></a></li></ul>
+      <p class="caption"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../devices.html">Honeywell Quantum Solutions Devices</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../__init__.html">pennylane_hqs</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../__init__.html#classes">Classes</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">HQSDevice</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../__init__.html#class-inheritance-diagram">Class Inheritance Diagram</a></li>
+</ul>
+</li>
+</ul>
+
+    
+  </div>
+  <div class="xanadu-call-to-action-links">
+    <h3>Downloads</h3>
+    <div id="tutorial-type">code/api/pennylane_hqs.HQSDevice</div>
+    <div id="download-python-link">
+      <i class="fab fa-python"></i>&nbsp;
+      <div class="call-to-action-desktop-view">Download Python script</div>
+    </div>
+    <div id="download-notebook-link">
+      <i class="fas fa-download"></i>&nbsp;
+      <div class="call-to-action-desktop-view">Download Notebook</div>
+    </div>
+    <div id="github-view-link">
+      <i class="fab fa-github"></i>&nbsp;
+      <div class="call-to-action-desktop-view">View on GitHub</div>
+    </div>
+  </div>
+</div>
+</div>
+
+          <div class="clearfix"></div>
+        </div>
+
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../__init__.html" title="pennylane_hqs"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">PennyLane-HQS 0.10.0-dev0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../__init__.html" >pennylane_hqs</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle").click(function () {
+    $("#left-column").slideToggle("slow");
+  });
+</script>
+
+<!-- JQuery -->
+<script src="https://code.jquery.com/jquery-migrate-1.0.0.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js'></script>
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.8.10/js/mdb.min.js"></script>
+
+<script type="text/javascript" src="../../_static/js/nanoscroller.min.js"></script>
+<script type="text/javascript">
+    $('a.reference.internal').each(function(){
+      var link = $(this).attr("href");
+
+      var hash = link.split('#')[1];
+      var page = link.split('#')[0].split('/').slice(-1)[0].replace(".html", "");
+
+      if (hash == page) {
+        $(this).attr('href', link.split('#')[0]);
+      }
+    });
+
+    $(".document > .section").removeClass("section");
+    $(".comment-container .nano-content").css("height", $("#content").height());
+    $(".comment-container").css("height", $("#content").height());
+    $(".nano").nanoScroller();
+</script>
+<script type="text/javascript">
+    $(window).scroll(function(){
+      var scrollBottom = $(document).height() - $(window).height() - $(window).scrollTop();
+      if (scrollBottom < 342) {
+        $('.comment-container').css("height", "calc(100% - " + (342 - scrollBottom) + "px)");
+        $('.comment-container .nano-content').css("height", "calc(100% - 119px)");
+      }
+    });
+</script>
+ <script type="text/javascript">
+    if ($('.current').length) {
+        var target = $('.current')[0]
+        var rect = target.getBoundingClientRect();
+        if (rect.bottom > window.innerHeight) {
+            $(".nano").nanoScroller({ scrollTo: $('.current') });
+        } else {
+            $(".nano").nanoScroller({ scrollTop: 0 });
+        }
+    }
+    $(document).ready(function () {
+        $(".css-transitions-only-after-page-load").each(function (index, element) {
+            setTimeout(function () { $(element).removeClass("css-transitions-only-after-page-load") }, 10);
+        });
+        if (window.location.hash) {
+           var target = $("[id='"+window.location.hash.substr(1)+"']");
+           if (target.closest(".collapse").length) {
+              target.closest(".collapse").addClass("show");
+              target.closest(".collapse").prev().find(".rotate").addClass("up");
+           }
+        }
+    });
+</script>
+<script type="text/javascript">
+var downloadNote = $(".sphx-glr-download-link-note.admonition.note");
+if (downloadNote.length >= 1) {
+    var tutorialUrlArray = $("#tutorial-type").text().split('/');
+        tutorialUrlArray[0] = "examples"
+
+    var githubLink = "https://github.com/XanaduAI/pennylane/blob/master/" + tutorialUrlArray.join("/") + ".py",
+        pythonLink = $(".reference.download")[0].href,
+        notebookLink = $(".reference.download")[1].href,
+        notebookDownloadPath = notebookLink.split('_downloads')[1].split('/').pop();
+
+    $("#download-python-link").wrap("<a href=" + pythonLink + " data-behavior='call-to-action-event' data-response='Download Python script' download target='_blank'/>");
+    $("#download-notebook-link").wrap("<a href=" + notebookLink + " data-behavior='call-to-action-event' data-response='Download Notebook' download target='_blank'/>");
+    $("#github-view-link").wrap("<a href=" + githubLink + " data-behavior='call-to-action-event' data-response='View on Github' target='_blank'/>");
+} else {
+    $(".xanadu-call-to-action-links").hide();
+}
+</script>
+<script type="text/javascript">jQuery.noConflict(true);</script>
+        <footer class="page-footer text-md-left pt-4">
+  
+    <hr class="pb-0 mb-0">
+    <div class="container-fluid">
+      <div class="row   justify-content-md-center">
+        <div class="col-md-3">
+          <h5 class=" mb-1 footer-heading">Xanadu</h5>
+          <hr width=100px class="d-inline-block mt-0 mb-1 Deep-purple accent-4">
+          <p class="">Located in the heart of downtown Toronto, we've brought together exceptional minds from around the world to build quantum computers that are useful and available to people everywhere.</p>
+        </div>
+
+    <div class="col-md-2 col-4">
+          <h5 class=" mb-1 footer-heading">PennyLane</h5>
+          <hr width=100px class="d-inline-block mt-0 mb-1 Deep-purple accent-4">
+          <ul class="list-unstyled">
+            <li><a class="" href="https://pennylane.ai/">Home page</a></li>
+            <li><a class="" href="https://github.com/XanaduAI/pennylane">GitHub</a></li>
+            <li><a class="" href="https://pennylane.readthedocs.io/">Documentation</a></li>
+            <li><a class="" href="https://discuss.pennylane.ai/">Discussion forum</a></li>
+            <li><a class="" href="https://twitter.com/pennylaneai/">Twitter</a></li>
+          </ul>
+        </div>
+		<div class="col-md-2 col-4">
+          <h5 class=" mb-1 footer-heading">Strawberry Fields</h5>
+          <hr width=100px class="d-inline-block mt-0 mb-1 Deep-purple accent-4">
+          <ul class="list-unstyled">
+            <li><a class="" href="https://strawberryfields.ai/">Interactive</a></li>
+            <li><a class="" href="https://github.com/XanaduAI/strawberryfields">GitHub</a></li>
+            <li><a class="" href="https://strawberryfields.readthedocs.io/">Documentation</a></li>
+            <li><a class="" href="https://u.strawberryfields.ai/slack/">Slack channel</a></li>
+          </ul>
+        </div>
+
+
+        <div class="col-md-2 col-4">
+          <h5 class=" mb-1 footer-heading">About</h5>
+          <hr width=100px class="d-inline-block mt-0 mb-1 Deep-purple accent-4">
+          <ul class="list-unstyled">
+            <li><a class="" href="https://www.xanadu.ai/">Home</a></li>
+            <li><a class="" href="https://www.xanadu.ai/hardware/">Hardware</a></li>
+            <li><a class="" href="https://www.xanadu.ai/software/">Software</a></li>
+            <li><a class="" href="https://www.xanadu.ai/research">Research</a></li>
+            <li><a class="" href="https://medium.com/XanaduAI">Blog</a></li>
+            <li><a class="" href="https://www.xanadu.ai/about/">About</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <hr>
+
+    <!-- <hr class="pb-0 mb-0"> -->
+
+    <!--Social buttons-->
+    <div class="social-section text-center">
+        <ul class="list-unstyled list-inline mb-0">
+            <li class="list-inline-item"><a class="btn-fb" href="https://www.facebook.com/Xanadu-1312050742230493/"><i class="fab fa-facebook-f"> </i></a></li>
+            <li class="list-inline-item"><a class="btn-tw" href="https://twitter.com/xanaduai"><i class="fab fa-twitter"> </i></a></li>
+            <li class="list-inline-item"><a class="" href="https://medium.com/xanaduai"><i class="fab fa-medium-m"> </i></a></li>
+            <li class="list-inline-item"><a class="btn-li" href="https://www.linkedin.com/company/xanaduai/"><i class="fab fa-linkedin-in"> </i></a></li>
+            <li class="list-inline-item"><a class="btn-git" href="https://github.com/XanaduAI"><i class="fab fa-github"> </i></a></li>
+        </ul>
+        <a href="https://xanadu.us17.list-manage.com/subscribe?u=725f07a1d1a4337416c3129fd&id=294b062630" style="font-size: initial;">Stay updated with our newsletter</a>
+    </div>
+    <!--/.Social buttons-->
+
+    <!--Copyright-->
+    <div class="footer-copyright py-3 mt-0 text-center">
+        <div class="container-fluid">
+            © Copyright 2018-2020 | Xanadu | All rights reserved
+            <br>
+             TensorFlow, the TensorFlow logo and any related marks are trademarks of Google Inc. 
+        </div>
+    </div>
+  </footer>
+  </body>
+</html>
