@@ -1,6 +1,0 @@
-<map id="inheritance65816e26e7" name="inheritance65816e26e7">
-<area shape="rect" id="node1" title="Helper class that provides a standard way to create an ABC using" alt="" coords="5,5,77,31"/>
-<area shape="rect" id="node2" title="Abstract base class for PennyLane devices." alt="" coords="125,5,197,31"/>
-<area shape="rect" id="node4" title="Abstract base class for PennyLane qubit devices." alt="" coords="245,5,348,31"/>
-<area shape="rect" id="node3" href="api/pennylane_hqs.HQSDevice.html#pennylane_hqs.HQSDevice" target="_top" title="HQS device for PennyLane." alt="" coords="396,5,491,31"/>
-</map>
