@@ -12,6 +12,11 @@ Once the PennyLane-HQS plugin is installed, the Honeywell online devices can be
 accessed straight away in PennyLane, without the need to import any additional
 packages.
 
+.. note::
+
+    The PennyLane-HQS plugin is currently in *beta* release. Expect some features
+    to be updated or change in the future.
+
 Devices
 =======
 
