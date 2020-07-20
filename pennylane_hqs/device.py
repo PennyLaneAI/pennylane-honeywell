@@ -65,6 +65,7 @@ class HQSDevice(QubitDevice):
 
     Args:
         wires (int): the number of wires to initialize the device with
+        machine (str): name of the Honeywell machine to execute on
         shots (int): number of circuit evaluations/random samples used
             to estimate expectation values of observables
         api_key (str): The HQS API key. If not provided, the environment
@@ -92,17 +93,18 @@ class HQSDevice(QubitDevice):
     TERMINAL_STATUSES = ["failed", "completed", "cancelled"]
     PRIORITY = "normal"
     LANGUAGE = "OPENQASM 2.0"
-    BACKEND = "HQS-LT-1.0-APIVAL"
+    DEFAULT_BACKEND = "HQS-LT-1.0-APIVAL"
     API_HEADER_KEY = "x-api-key"
 
-    def __init__(self, wires, shots=1000, api_key=None, retry_delay=2):
+    def __init__(self, wires, machine, shots=1000, api_key=None, retry_delay=2):
         super().__init__(wires=wires, shots=shots, analytic=False)
+        self.machine = machine or self.DEFAULT_BACKEND
         self.shots = shots
         self._retry_delay = retry_delay
         self._api_key = api_key
         self.set_api_configs()
         self.data = {
-            "machine": self.BACKEND,
+            "machine": self.machine,
             "language": self.LANGUAGE,
             "priority": self.PRIORITY,
             "count": self.shots,
