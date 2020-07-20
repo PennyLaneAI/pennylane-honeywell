@@ -1,0 +1,15 @@
+*~
+*.pyc
+doc/_build
+build
+dist
+qit.egg-info
+.idea
+*.ipynp
+*.ipynb_checkpoints
+*.egg-info*
+.coverage
+coverage_html_report/*
+.pytest_cache/*
+doc/code/api/*
+*.DS_Store
