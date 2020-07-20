@@ -61,7 +61,7 @@ OPENQASM_GATES = {
 
 
 class HQSDevice(QubitDevice):
-    r"""HQS device for PennyLane.
+    r"""Honeywell Quantum Services device for PennyLane.
 
     Args:
         wires (int): the number of wires to initialize the device with
@@ -85,7 +85,7 @@ class HQSDevice(QubitDevice):
         "inverse_operations": True,
     }
 
-    short_name = "hqs.base_device"
+    short_name = "honeywell.hqs"
     _operation_map = {**OPENQASM_GATES}
 
     BASE_HOSTNAME = "https://qapi.honeywell.com/v1"

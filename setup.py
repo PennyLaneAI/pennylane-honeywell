@@ -17,7 +17,7 @@ import sys
 import os
 from setuptools import setup
 
-with open("pennylane_hqs/_version.py") as f:
+with open("pennylane_honeywell/_version.py") as f:
     version = f.readlines()[-1].split()[-1].strip("\"'")
 
 # Put pip installation requirements here.
@@ -28,7 +28,7 @@ requirements = ["pennylane"]
 
 info = {
     # 'name' is the name that will be used by pip for installation
-    "name": "PennyLane-HQS",
+    "name": "PennyLane-Honeywell",
     "version": version,
     "maintainer": "Xanadu Inc.",
     "url": "http://xanadu.ai",
@@ -37,7 +37,7 @@ info = {
         # The name of the folder containing the plugin.
         # This is the name that will be used when importing
         # the plugin in Python.
-        "pennylane_hqs"
+        "pennylane_honeywell"
     ],
     "entry_points": {
         "pennylane.plugins": [
@@ -46,14 +46,14 @@ info = {
             # it corresponds to in the plugin. This allows
             # the device to be imported automatically via the
             # `pennylane.device` device loader.
-            "hqs.dev = pennylane_hqs:HQSDevice",
+            "honeywell.hqs = pennylane_honeywell:HQSDevice",
         ]
     },
     # Place a one line description here. This will be shown by pip
     "description": "PennyLane plugin to access the Honeywell Quantum Solutions cloud service.",
     "long_description": open("README.rst").read(),
     # The name of the folder containing the plugin
-    "provides": ["pennylane_hqs"],
+    "provides": ["pennylane_honeywell"],
     "install_requires": requirements,
 }
 

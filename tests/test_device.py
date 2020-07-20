@@ -20,11 +20,13 @@ import requests
 import pennylane as qml
 import numpy as np
 
-from pennylane_hqs.device import HQSDevice
-from pennylane_hqs import __version__
+from pennylane_honeywell.device import HQSDevice
+from pennylane_honeywell import __version__
 
 API_HEADER_KEY = "x-api-key"
 BASE_HOSTNAME = "https://qapi.honeywell.com/v1"
+
+DUMMY_MACHINE = "SOME_MACHINE_NAME"
 
 SOME_API_KEY = "ABC123"
 
@@ -35,7 +37,7 @@ shots = 1000
 [default.gaussian]
 hbar = 2
 
-[hqs.dev]
+[honeywell.hqs]
 shots = 99
 api_key = "{}"
 """.format(
@@ -94,14 +96,14 @@ class TestHQSDevice:
     def test_default_init(self, num_wires, shots, retry_delay):
         """Tests that the device is properly initialized."""
 
-        dev = HQSDevice(num_wires, shots, SOME_API_KEY, retry_delay)
+        dev = HQSDevice(num_wires, DUMMY_MACHINE, shots, SOME_API_KEY, retry_delay)
 
         assert dev.num_wires == num_wires
         assert dev.shots == shots
         assert dev.retry_delay == retry_delay
         assert dev.analytic == False
         assert dev.data == {
-            "machine": "HQS-LT-1.0-APIVAL",
+            "machine": DUMMY_MACHINE,
             "language": "OPENQASM 2.0",
             "priority": "normal",
             "count": shots,
@@ -116,7 +118,7 @@ class TestHQSDevice:
     def test_reset(self):
         """Tests that the ``reset`` method corretly resets data."""
 
-        dev = HQSDevice(3, shots=10, api_key=SOME_API_KEY)
+        dev = HQSDevice(3, shots=10, machine=DUMMY_MACHINE, api_key=SOME_API_KEY)
 
         dev._results = ["00"] * 10
         dev._samples = np.zeros((10, 3))
@@ -131,7 +133,7 @@ class TestHQSDevice:
     def test_retry_delay(self):
         """Tests that the ``retry_delay`` property can be set manually."""
 
-        dev = HQSDevice(3, api_key=SOME_API_KEY, retry_delay=2.5)
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, api_key=SOME_API_KEY, retry_delay=2.5)
         assert dev.retry_delay == 2.5
 
         dev.retry_delay = 1.0
@@ -143,7 +145,7 @@ class TestHQSDevice:
     def test_set_api_configs(self):
         """Tests that the ``set_api_configs`` method properly (re)sets the API configs."""
 
-        dev = HQSDevice(3, api_key=SOME_API_KEY)
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, api_key=SOME_API_KEY)
         new_api_key = "XYZ789"
         dev._api_key = new_api_key
         dev.BASE_HOSTNAME = "https://server.someaddress.com"
@@ -168,7 +170,7 @@ class TestHQSDevice:
             "pennylane.default_config", qml.Configuration("config.toml")
         )  # force loading of config
         with pytest.raises(ValueError, match="No valid api key for HQS platform found"):
-            dev = HQSDevice(2)
+            dev = HQSDevice(2, machine=DUMMY_MACHINE)
 
     @pytest.mark.parametrize(
         "results, indices",
@@ -187,7 +189,7 @@ class TestHQSDevice:
     def test_generate_samples(self, results, indices):
         """Tests that the generate_samples function of HQSDevice provides samples in
         the correct format expected by PennyLane."""
-        dev = HQSDevice(3, shots=10, api_key=SOME_API_KEY)
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, shots=10, api_key=SOME_API_KEY)
         dev._results = results
         res = dev.generate_samples()
         expected_array = np.stack([np.ravel(indices)] * 10)
@@ -202,7 +204,7 @@ class TestHQSDeviceIntegration:
         """Tests whether an exception is raised if the circuit is
         passed an unsupported operation."""
 
-        dev = HQSDevice(2, api_key=SOME_API_KEY)
+        dev = HQSDevice(2, machine=DUMMY_MACHINE, api_key=SOME_API_KEY)
 
         U = np.array(
             [
@@ -224,13 +226,14 @@ class TestHQSDeviceIntegration:
     def test_load_from_device_function(self, num_wires, shots):
         """Tests that the HQSDevice can be loaded from PennyLane `device` function."""
 
-        dev = qml.device("hqs.dev", wires=num_wires, shots=shots, api_key=SOME_API_KEY)
+        dev = qml.device("honeywell.hqs", wires=num_wires, machine=DUMMY_MACHINE,
+                         shots=shots, api_key=SOME_API_KEY)
 
         assert dev.num_wires == num_wires
         assert dev.shots == shots
         assert dev.analytic == False
         assert dev.data == {
-            "machine": "HQS-LT-1.0-APIVAL",
+            "machine": DUMMY_MACHINE,
             "language": "OPENQASM 2.0",
             "priority": "normal",
             "count": shots,
@@ -254,7 +257,7 @@ class TestHQSDeviceIntegration:
             "pennylane.default_config", qml.Configuration("config.toml")
         )  # force loading of config
         with pytest.raises(ValueError, match="No valid api key for HQS platform found"):
-            dev = qml.device("hqs.dev", 2)
+            dev = qml.device("honeywell.hqs", wires=2, machine=DUMMY_MACHINE)
 
     def test_device_gets_local_config(self, monkeypatch, tmpdir):
         """Tests that the device successfully reads a config from the local directory."""
@@ -268,7 +271,7 @@ class TestHQSDeviceIntegration:
             "pennylane.default_config", qml.Configuration("config.toml")
         )  # force loading of config
 
-        dev = qml.device("hqs.dev", wires=2)
+        dev = qml.device("honeywell.hqs", wires=2, machine=DUMMY_MACHINE)
 
         assert dev.shots == 99
         assert API_HEADER_KEY in dev.header.keys()
@@ -291,7 +294,7 @@ class TestHQSDeviceIntegration:
         c = qml.Configuration("config.toml")
         monkeypatch.setattr("pennylane.default_config", c)  # force loading of config
 
-        dev = qml.device("hqs.dev", wires=2)
+        dev = qml.device("honeywell.hqs", wires=2, machine=DUMMY_MACHINE)
 
         assert API_HEADER_KEY in dev.header.keys()
         assert dev.header[API_HEADER_KEY] == SOME_API_KEY
@@ -310,7 +313,7 @@ class TestHQSDeviceIntegration:
             "pennylane.default_config", qml.Configuration("config.toml")
         )  # force loading of config
 
-        dev = qml.device("hqs.dev", wires=2)
+        dev = qml.device("honeywell.hqs", wires=2, machine=DUMMY_MACHINE)
 
         assert API_HEADER_KEY in dev.header.keys()
         assert dev.header[API_HEADER_KEY] == SOME_API_KEY
@@ -323,7 +326,7 @@ class TestHQSDeviceIntegration:
         monkeypatch.setenv("PENNYLANE_CONF", "")
         monkeypatch.setenv("HQS_TOKEN", SOME_API_KEY + "XYZ987")
 
-        dev = qml.device("hqs.dev", wires=2)
+        dev = qml.device("honeywell.hqs", wires=2, machine=DUMMY_MACHINE)
 
         assert API_HEADER_KEY in dev.header.keys()
         assert dev.header[API_HEADER_KEY] == NEW_API_KEY
@@ -332,7 +335,7 @@ class TestHQSDeviceIntegration:
         """Tests that a PennyLane QNode successfully executes with a
         mocked out online API."""
 
-        dev = qml.device("hqs.dev", wires=2, shots=10, retry_delay=0.01, api_key=SOME_API_KEY)
+        dev = qml.device("honeywell.hqs", wires=2, machine=DUMMY_MACHINE, shots=10, retry_delay=0.01, api_key=SOME_API_KEY)
 
         @qml.qnode(dev)
         def circuit(x, y):
@@ -352,7 +355,7 @@ class TestHQSDeviceIntegration:
     def test_exception_failed_job(self, monkeypatch):
         """Tests that an exception is raised if the job status is `failed`."""
 
-        dev = qml.device("hqs.dev", wires=2, shots=10, retry_delay=0.01, api_key=SOME_API_KEY)
+        dev = qml.device("honeywell.hqs", wires=2, machine=DUMMY_MACHINE, shots=10, retry_delay=0.01, api_key=SOME_API_KEY)
 
         @qml.qnode(dev)
         def circuit(x, y):
@@ -375,7 +378,7 @@ class TestHQSDeviceIntegration:
         """Tests that an exception is raised if the job status is `cancelled`
         and no partial results were returned."""
 
-        dev = qml.device("hqs.dev", wires=2, shots=10, retry_delay=0.01, api_key=SOME_API_KEY)
+        dev = qml.device("honeywell.hqs", wires=2, machine=DUMMY_MACHINE, shots=10, retry_delay=0.01, api_key=SOME_API_KEY)
 
         @qml.qnode(dev)
         def circuit(x, y):
@@ -401,7 +404,7 @@ class TestHQSDeviceIntegration:
         """Tests that a warning is given if the job status is `cancelled`
         and partial results were returned."""
 
-        dev = qml.device("hqs.dev", wires=2, shots=10, retry_delay=0.01, api_key=SOME_API_KEY)
+        dev = qml.device("honeywell.hqs", wires=2, machine=DUMMY_MACHINE, shots=10, retry_delay=0.01, api_key=SOME_API_KEY)
 
         @qml.qnode(dev)
         def circuit(x, y):
@@ -443,7 +446,7 @@ class TestHQSDeviceIntegration:
         expectation value in PennyLane."""
         num_wires = len(wire_flip_idx)
         dev = qml.device(
-            "hqs.dev", wires=num_wires, shots=10, retry_delay=0.01, api_key=SOME_API_KEY
+            "honeywell.hqs", wires=num_wires, machine=DUMMY_MACHINE, shots=10, retry_delay=0.01, api_key=SOME_API_KEY
         )
 
         # bit flip circuit
