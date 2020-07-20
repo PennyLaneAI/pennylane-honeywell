@@ -88,7 +88,7 @@ class MockResponse:
 
 
 class TestHQSDevice:
-    """Tests for the TestHQSDevice base class."""
+    """Tests for the HQSDevice base class."""
 
     @pytest.mark.parametrize("num_wires", [1, 3])
     @pytest.mark.parametrize("shots", [1, 100])
@@ -154,7 +154,7 @@ class TestHQSDevice:
 
         assert dev.header == {
             "x-api-key": new_api_key,
-            "User-Agent": "pennylane-hqs_v{}".format(__version__),
+            "User-Agent": "pennylane-honeywell_v{}".format(__version__),
         }
         assert dev.hostname == "https://server.someaddress.com/some/path"
 

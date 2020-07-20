@@ -98,7 +98,7 @@ class HQSDevice(QubitDevice):
 
     def __init__(self, wires, machine, shots=1000, api_key=None, retry_delay=2):
         super().__init__(wires=wires, shots=shots, analytic=False)
-        self.machine = machine or self.DEFAULT_BACKEND
+        self.machine = machine
         self.shots = shots
         self._retry_delay = retry_delay
         self._api_key = api_key
@@ -125,7 +125,7 @@ class HQSDevice(QubitDevice):
         if not self._api_key:
             raise ValueError("No valid api key for HQS platform found.")
         self.header = {
-            "User-Agent": "pennylane-hqs_v{}".format(__version__),
+            "User-Agent": "pennylane-honeywell_v{}".format(__version__),
             self.API_HEADER_KEY: self._api_key,
         }
         self.hostname = "/".join([self.BASE_HOSTNAME, self.TARGET_PATH])
