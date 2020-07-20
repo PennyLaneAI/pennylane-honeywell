@@ -1,29 +1,29 @@
-PennyLane-HQS Plugin
-####################
+PennyLane-Honeywell Plugin
+##########################
 
-.. image:: https://img.shields.io/travis/com/XanaduAI/pennylane-hqs/master.svg?style=popout-square
+.. image:: https://img.shields.io/travis/com/XanaduAI/pennylane-honeywell/master.svg?style=popout-square
     :alt: Travis
-    :target: https://travis-ci.com/XanaduAI/pennylane-hqs
+    :target: https://travis-ci.com/XanaduAI/pennylane-honeywell
 
-.. image:: https://img.shields.io/codecov/c/github/xanaduai/pennylane-hqs/master.svg?style=popout-square
+.. image:: https://img.shields.io/codecov/c/github/xanaduai/pennylane-honeywell/master.svg?style=popout-square
     :alt: Codecov coverage
-    :target: https://codecov.io/gh/XanaduAI/pennylane-hqs
+    :target: https://codecov.io/gh/XanaduAI/pennylane-honeywell
 
-.. image:: https://img.shields.io/readthedocs/pennylane-hqs.svg?style=popout-square
+.. image:: https://img.shields.io/readthedocs/pennylane-honeywell.svg?style=popout-square
     :alt: Read the Docs
-    :target: https://pennylane-hqs.readthedocs.io
+    :target: https://pennylane-honeywell.readthedocs.io
 
-.. image:: https://img.shields.io/pypi/v/PennyLane-HQS.svg?style=popout-square
+.. image:: https://img.shields.io/pypi/v/PennyLane-Honeywell.svg?style=popout-square
     :alt: PyPI
-    :target: https://pypi.org/project/PennyLane-HQS
+    :target: https://pypi.org/project/PennyLane-Honeywell
 
-.. image:: https://img.shields.io/pypi/pyversions/PennyLane-HQS.svg?style=popout-square
+.. image:: https://img.shields.io/pypi/pyversions/PennyLane-Honeywell.svg?style=popout-square
     :alt: PyPI - Python Version
-    :target: https://pypi.org/project/PennyLane-HQS
+    :target: https://pypi.org/project/PennyLane-Honeywell
 
 .. header-start-inclusion-marker-do-not-remove
 
-The PennyLane-HQS plugin provides the ability to use Honeywell Quantum Solutions' ion-trap
+The PennyLane-Honeywell plugin provides the ability to use Honeywell Quantum Solutions' ion-trap
 quantum computing hardware with PennyLane.
 
 `PennyLane <https://pennylane.ai>`_ provides open-source tools for
@@ -32,14 +32,19 @@ quantum machine learning, quantum computing, quantum chemistry, and hybrid quant
 `Honeywell Quantum Solutions <https://www.honeywell.com/en-us/company/quantum>`_ provides access to
 ion-trap quantum computing hardware over the cloud.
 
+.. note::
+
+    The PennyLane-Honeywell plugin is currently in *beta* release. Expect some features
+    to be updated or change in the future.
+
 .. header-end-inclusion-marker-do-not-remove
 
-The plugin documentation can be found here: `PennyLane-HQS <https://pennylane-hqs.readthedocs.io/en/latest/>`__.
+The plugin documentation can be found here: `PennyLane-Honeywell <https://pennylane-honeywell.readthedocs.io/en/latest/>`__.
 
 Features
 ========
 
-* Provides a PennyLane device ``hqs.dev`` which can be used to access Honeywell Quantum Solutions' online hardware API.
+* Provides a PennyLane device ``honeywell.hqs`` which can be used to access Honeywell Quantum Solutions' online hardware API.
 
 * Supports core PennyLane operations such as qubit rotations, Hadamard, basis state preparations, etc.
 
@@ -48,13 +53,13 @@ Features
 Installation
 ============
 
-PennyLane-HQS only requires PennyLane for use, no additional external frameworks are needed.
+PennyLane-Honeywell only requires PennyLane for use, no additional external frameworks are needed.
 The plugin can be installed via ``pip``:
 ::
 
-    $ python3 -m pip install pennylane-hqs
+    $ python3 -m pip install pennylane-honeywell
 
-Alternatively, you can install PennyLane-HQS from the source code by navigating to the top directory and running
+Alternatively, you can install PennyLane-Honeywell from the source code by navigating to the top directory and running
 ::
 
     $ python3 setup.py install
@@ -67,7 +72,7 @@ version of Python packaged for scientific computation.
 Software tests
 ~~~~~~~~~~~~~~
 
-To ensure that PennyLane-HQS is working correctly after installation, the test suite can be
+To ensure that PennyLane-Honeywell is working correctly after installation, the test suite can be
 run by navigating to the source code folder and running
 ::
 
@@ -89,20 +94,21 @@ The documentation can then be found in the ``doc/_build/html/`` directory.
 Getting started
 ===============
 
-Once PennyLane-HQS is installed, the provided HQS devices can be accessed straight
-away in PennyLane. However, the user will need access credentials for the HQS platform in order to
-use these remote devices. These credentials should be provided to PennyLane via a
+Once PennyLane-Honeywell is installed, available Honeywell devices can be accessed straight
+away in PennyLane. However, the user will need access credentials for the Honeywell Quantum Solutions (HQS) platform in
+order to use these remote devices. These credentials should be provided to PennyLane via a
 `configuration file or environment variable <https://pennylane.readthedocs.io/en/stable/introduction/configuration.html>`_.
 Specifically, the variable ``HQS_TOKEN`` must contain a valid access key for HQS's online platform.
 
-You can instantiate the HQS devices for PennyLane as follows:
+You can instantiate the HQS device class for PennyLane as follows:
 
 .. code-block:: python
 
     import pennylane as qml
-    dev1 = qml.device('hqs.dev', wires=2)
+    dev1 = qml.device('honeywell.hqs', machine_name, wires=2)
 
-where ``dev`` is the specific name of the online device you'd like to access.
+where ``machine_name`` is the specific name of the online device you'd like to access. Contact Honeywell Quantum
+Solutions to receive platform access and machine names.
 
 HQS devices can then be used just like other devices for the definition and evaluation of
 quantum circuits within PennyLane. For more details and ideas, see the
@@ -113,18 +119,18 @@ to the `PennyLane documentation <https://pennylane.readthedocs.io>`_.
 Contributing
 ============
 
-We welcome contributions—simply fork the PennyLane-HQS repository, and then make a
+We welcome contributions—simply fork the PennyLane-Honeywell repository, and then make a
 `pull request <https://help.github.com/articles/about-pull-requests/>`_ containing your contribution.
-All contributers to PennyLane-HQS will be listed as contributors on the releases.
+All contributers to PennyLane-Honeywell will be listed as contributors on the releases.
 
 We also encourage bug reports, suggestions for new features and enhancements, and even links to cool
-projects or applications built on PennyLane and HQS.
+projects or applications built on PennyLane and Honeywell Quantum Solutions' machines.
 
 
 Contributors
 ============
 
-PennyLane-HQS is the work of many `contributors <https://github.com/XanaduAI/pennylane-hqs/graphs/contributors>`_.
+PennyLane-Honeywell is the work of many `contributors <https://github.com/XanaduAI/pennylane-honeywell/graphs/contributors>`_.
 
 If you are doing research using PennyLane, please cite our papers:
 
@@ -143,8 +149,8 @@ If you are doing research using PennyLane, please cite our papers:
 Support
 =======
 
-- **Source Code:** https://github.com/XanaduAI/pennylane-hqs
-- **Issue Tracker:** https://github.com/XanaduAI/pennylane-hqs/issues
+- **Source Code:** https://github.com/XanaduAI/pennylane-honeywell
+- **Issue Tracker:** https://github.com/XanaduAI/pennylane-honeywell/issues
 
 If you are having issues, please let us know by posting the issue on our GitHub issue tracker.
 
@@ -154,6 +160,6 @@ If you are having issues, please let us know by posting the issue on our GitHub 
 License
 =======
 
-PennyLane-HQS is **free** and **open source**, released under the Apache License, Version 2.0.
+PennyLane-Honeywell is **free** and **open source**, released under the Apache License, Version 2.0.
 
 .. license-end-inclusion-marker-do-not-remove

@@ -1,5 +1,5 @@
-PennyLane-HQS Plugin
-####################
+PennyLane-Honeywell Plugin
+##########################
 
 :Release: |release|
 
@@ -7,23 +7,16 @@ PennyLane-HQS Plugin
   :start-after:	header-start-inclusion-marker-do-not-remove
   :end-before: header-end-inclusion-marker-do-not-remove
 
-
-Once the PennyLane-HQS plugin is installed, the Honeywell online devices can be
-accessed straight away in PennyLane, without the need to import any additional
-packages.
-
-.. note::
-
-    The PennyLane-HQS plugin is currently in *beta* release. Expect some features
-    to be updated or change in the future.
+Once the PennyLane-Honeywell plugin is installed, the Honeywell Quantum Solutions online devices can be
+accessed straight away in PennyLane, without the need to import any additional packages.
 
 Devices
 =======
 
-PennyLane-HQS provides Honeywell Quantum Solutions hardware devices for PennyLane:
+PennyLane-Honeywell provides Honeywell Quantum Solutions hardware devices for PennyLane:
 
 .. devicegalleryitem::
-    :name: 'hqs.dev'
+    :name: 'honeywell.hqs'
     :description: Honeywell Quantum Solutions cloud ion-trap hardware.
     :link: devices.html#hqs
 

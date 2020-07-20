@@ -1,26 +1,25 @@
 Honeywell Quantum Solutions Devices
 ===================================
 
-The PennyLane-HQS plugin provides the ability for PennyLane to access
+The PennyLane-Honeywell plugin provides the ability for PennyLane to access
 devices available via Honeywell Quantum Solutions' cloud hardware service.
 
 .. raw::html
-    <section id="dev">
+    <section id="hqs">
 
-Cloud ion-trap hardware
+Cloud ion-trap machines
 -----------------------
 
-This PennyLane device connects you to ion-trap hardware available from
-Honeywell Quantum Solutions.
+This PennyLane device connects you to ion-trap machines available from Honeywell Quantum Solutions.
 Once the plugin has been installed, you can use this device
-directly in PennyLane by specifying ``"hqs.dev"``, where ``dev`` is
-the name of the online hardware device you wish to access:
+directly in PennyLane by specifying ``"honeywell.hqs"`` and providing the name of the online hardware machine
+you wish to access:
 
 .. code-block:: python
 
     import pennylane as qml
 
-    dev = qml.device("hqs.dev", wires=2)
+    dev = qml.device("honeywell.hqs", machine_name, wires=2)
 
     @qml.qnode(dev)
     def circuit(w, x, y, z):
@@ -29,6 +28,8 @@ the name of the online hardware device you wish to access:
         qml.RY(0.5, wires=0)
         return qml.expval(qml.PauliZ(0))
 
+where ``machine_name`` is a string specifying the specific online hardware you wish to use.
+Contact Honeywell Quantum Solutions to receive platform access and machine names.
 
 Remote backend access
 ---------------------
