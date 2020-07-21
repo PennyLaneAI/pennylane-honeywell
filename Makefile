@@ -1,7 +1,7 @@
 PYTHON3 := $(shell which python3 2>/dev/null)
 
 PYTHON := python3
-COVERAGE := --cov=pennylane_hqs --cov-report term-missing --cov-report=html:coverage_html_report
+COVERAGE := --cov=pennylane_honeywell --cov-report term-missing --cov-report=html:coverage_html_report
 TESTRUNNER := -m pytest tests
 
 .PHONY: help
