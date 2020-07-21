@@ -1,0 +1,18 @@
+language: python
+cache: pip
+python:
+- 3.6
+- 3.7
+- 3.8
+before_install:
+- pip install pip --upgrade
+- pip install -e git+https://github.com/XanaduAI/pennylane.git#egg=pennylane
+- pip install --upgrade -r requirements.txt
+- pip install --upgrade pytest pytest-cov wheel codecov
+install:
+- python setup.py bdist_wheel
+- pip install dist/PennyLane*.whl
+script:
+- make coverage
+after_success:
+- bash <(curl -s https://codecov.io/bash)
