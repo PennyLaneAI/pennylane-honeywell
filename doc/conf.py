@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# PennyLane-HQS documentation build configuration file.
+# PennyLane-Honeywell documentation build configuration file.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
@@ -62,7 +62,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'PennyLane-HQS'
+project = 'PennyLane-Honeywell'
 copyright = "Copyright 2020"
 author = 'Xanadu Inc.'
 
@@ -72,9 +72,9 @@ add_module_names = False
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 
-import pennylane_hqs
+import pennylane_honeywell
 # The full version, including alpha/beta/rc tags.
-release = pennylane_hqs.__version__
+release = pennylane_honeywell.__version__
 
 # The short X.Y version.
 version = re.match(r'^(\d+\.\d+)', release).expand(r'\1')
@@ -138,7 +138,7 @@ html_theme_path = ['.']
 # xanadu theme options (see theme.conf for more information)
 html_theme_options = {
     # Set the name of the project to appear in the left sidebar.
-    "project_nav_name": "PennyLane-HQS",
+    "project_nav_name": "PennyLane-Honeywell",
 
     # Path to a touch icon
     "touch_icon": "logo_new.png",
@@ -153,7 +153,7 @@ html_theme_options = {
     "download_button": "#19b37b",
 }
 
-edit_on_github_project = 'XanaduAI/pennylane-hqs'
+edit_on_github_project = 'XanaduAI/pennylane-honeywell'
 edit_on_github_branch = 'master/doc'
 
 #============================================================

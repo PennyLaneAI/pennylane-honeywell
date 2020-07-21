@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-This is the top-level module from which all PennyLane-HQS device classes can be directly imported.
+This is the top-level module from which all PennyLane-Honeywell
+device classes can be directly imported.
 """
 from ._version import __version__
 from .device import HQSDevice

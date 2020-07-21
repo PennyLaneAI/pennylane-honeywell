@@ -1,7 +1,7 @@
-pennylane_hqs
-=============
+pennylane_honeywell
+===================
 
-This section contains the API documentation for the PennyLane-HQS plugin.
+This section contains the API documentation for the PennyLane-Honeywell plugin.
 
 .. warning::
 
@@ -11,8 +11,8 @@ This section contains the API documentation for the PennyLane-HQS plugin.
     See the :doc:`overview </index>` page for more
     details using the available HQS devices with PennyLane.
 
-.. currentmodule:: pennylane_hqs
+.. currentmodule:: pennylane_honeywell
 
-.. automodapi:: pennylane_hqs
+.. automodapi:: pennylane_honeywell
     :no-heading:
     :include-all-objects:
