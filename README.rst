@@ -105,7 +105,7 @@ You can instantiate the HQS device class for PennyLane as follows:
 .. code-block:: python
 
     import pennylane as qml
-    dev1 = qml.device('honeywell.hqs', machine_name, wires=2)
+    dev1 = qml.device("honeywell.hqs", "machine_name", wires=2)
 
 where ``machine_name`` is the specific name of the online device you'd like to access. Contact Honeywell Quantum
 Solutions to receive platform access and machine names.

@@ -19,7 +19,7 @@ you wish to access:
 
     import pennylane as qml
 
-    dev = qml.device("honeywell.hqs", machine_name, wires=2)
+    dev = qml.device("honeywell.hqs", "machine_name", wires=2)
 
     @qml.qnode(dev)
     def circuit(w, x, y, z):
