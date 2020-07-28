@@ -1,1 +1,2 @@
 pennylane>=0.9
+requests
