@@ -64,7 +64,9 @@ class HQSDevice(QubitDevice):
     r"""Honeywell Quantum Services device for PennyLane.
 
     Args:
-        wires (int): the number of wires to initialize the device with
+        wires (int or Iterable[Number, str]]): Number of wires to initialize the device with,
+            or iterable that contains unique labels for the subsystems as numbers (i.e., ``[-1, 0, 2]``)
+            or strings (``['ancilla', 'q1', 'q2']``).
         machine (str): name of the Honeywell machine to execute on
         shots (int): number of circuit evaluations/random samples used
             to estimate expectation values of observables
