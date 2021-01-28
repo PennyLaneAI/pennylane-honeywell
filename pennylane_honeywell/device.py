@@ -172,9 +172,9 @@ class HQSDevice(QubitDevice):
 
         self.check_validity(circuit.operations, circuit.observables)
 
-        self._circuit_hash = circuit.hash
+        self._circuit_hash = circuit.graph.hash
 
-        circuit_str = circuit.to_openqasm()
+        circuit_str = circuit.graph.to_openqasm()
 
         body = {**self.data, "program": circuit_str}
 
