@@ -27,7 +27,7 @@ import requests
 
 import numpy as np
 
-from pennylane import QubitDevice, DeviceError, tape_mode_active
+from pennylane import QubitDevice, DeviceError
 from pennylane.operation import Sample
 
 from ._version import __version__
