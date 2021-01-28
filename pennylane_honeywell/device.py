@@ -172,9 +172,14 @@ class HQSDevice(QubitDevice):
 
         self.check_validity(circuit.operations, circuit.observables)
 
-        self._circuit_hash = circuit.graph.hash
+        if qml.tape_mode_active():
+            self._circuit_hash = circuit.graph.hash
+            circuit_str = circuit.graph.to_openqasm()
 
-        circuit_str = circuit.graph.to_openqasm()
+        else:
+
+            self._circuit_hash = circuit.hash
+            circuit_str = circuit.to_openqasm()
 
         body = {**self.data, "program": circuit_str}
 
