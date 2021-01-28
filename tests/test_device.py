@@ -87,7 +87,6 @@ class MockResponse:
     def raise_for_status(self):
         pass
 
-@pytest.mark.usefixtures("tape_mode")
 class TestHQSDevice:
     """Tests for the HQSDevice base class."""
 
@@ -197,7 +196,6 @@ class TestHQSDevice:
         assert res.shape == (dev.shots, dev.num_wires)
         assert np.all(res == expected_array)
 
-@pytest.mark.usefixtures("tape_mode")
 class TestHQSDeviceIntegration:
     """Integration tests of HQSDevice base class with PennyLane"""
 
