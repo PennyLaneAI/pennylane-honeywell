@@ -27,7 +27,7 @@ import requests
 
 import numpy as np
 
-from pennylane import QubitDevice, DeviceError
+from pennylane import QubitDevice, DeviceError, tape_mode_active
 from pennylane.operation import Sample
 
 from ._version import __version__
@@ -172,7 +172,7 @@ class HQSDevice(QubitDevice):
 
         self.check_validity(circuit.operations, circuit.observables)
 
-        if qml.tape_mode_active():
+        if tape_mode_active():
             self._circuit_hash = circuit.graph.hash
             circuit_str = circuit.graph.to_openqasm()
 
