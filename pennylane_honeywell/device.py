@@ -172,9 +172,14 @@ class HQSDevice(QubitDevice):
 
         self.check_validity(circuit.operations, circuit.observables)
 
-        self._circuit_hash = circuit.hash
+        try:
+            self._circuit_hash = circuit.graph.hash
+            circuit_str = circuit.graph.to_openqasm()
 
-        circuit_str = circuit.to_openqasm()
+        except AttributeError:  # pragma: no cover
+            # We're not in tape mode
+            self._circuit_hash = circuit.hash  # pragma: no cover
+            circuit_str = circuit.to_openqasm()  # pragma: no cover
 
         body = {**self.data, "program": circuit_str}
 
