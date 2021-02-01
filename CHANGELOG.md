@@ -3,7 +3,7 @@
 ### Bug fixes
 
 * Updates how the hash of the `CircuitGraph` is obtained in light of changes in PennyLane core.
-  [(#11)](https://github.com/PennyLaneAI/pennylane-lightning/pull/11)
+  [(#11)](https://github.com/PennyLaneAI/pennylane-honeywell/pull/11)
 
 ### Contributors
 
