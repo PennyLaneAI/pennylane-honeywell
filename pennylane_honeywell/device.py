@@ -174,7 +174,7 @@ class HQSDevice(QubitDevice):
 
         try:
             self._circuit_hash = circuit.graph.hash
-            circuit_str = circuit.graph.to_openqasm()
+            circuit_str = circuit.graph.to_openqasm() # pragma: no cover
 
         except AttributeError:  # pragma: no cover
             # We're not in tape mode
