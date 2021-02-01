@@ -1,2 +1,2 @@
-pennylane>=0.14
+pennylane>=0.9
 requests
