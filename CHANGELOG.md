@@ -9,7 +9,7 @@
 
 This release contains contributions from (in alphabetical order):
 
-Antal Száva
+Josh Izaac, Antal Száva
 
 ---
 
