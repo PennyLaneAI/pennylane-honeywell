@@ -1,18 +1,15 @@
-# Release 0.12.0-dev
-
-### New features since last release
-
-### Breaking changes
-
-### Improvements
-
-### Documentation
+# Release 0.14.0
 
 ### Bug fixes
+
+* Updates how the hash of the `CircuitGraph` is obtained in light of changes in PennyLane core.
+  [(#11)](https://github.com/PennyLaneAI/pennylane-honeywell/pull/11)
 
 ### Contributors
 
 This release contains contributions from (in alphabetical order):
+
+Josh Izaac, Antal Száva
 
 ---
 
