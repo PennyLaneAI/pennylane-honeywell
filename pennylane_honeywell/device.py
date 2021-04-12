@@ -175,8 +175,8 @@ class HQSDevice(QubitDevice):
 
     def execute(self, tape, **kwargs):
 
-        self.check_validity(circuit.operations, circuit.observables)
-        circuit_str = circuit.to_openqasm()
+        self.check_validity(tape.operations, tape.observables)
+        circuit_str = tape.to_openqasm()
 
         body = {**self.data, "program": circuit_str}
 
@@ -216,12 +216,12 @@ class HQSDevice(QubitDevice):
         self._samples = self.generate_samples()
 
         # compute the required statistics
-        results = self.statistics(circuit.observables)
+        results = self.statistics(tape.observables)
 
         # Ensures that a combination with sample does not put
         # expvals and vars in superfluous arrays
-        all_sampled = all(obs.return_type is Sample for obs in circuit.observables)
-        if circuit.is_sampled and not all_sampled:
+        all_sampled = all(obs.return_type is Sample for obs in tape.observables)
+        if tape.is_sampled and not all_sampled:
             return self._asarray(results, dtype="object")  # pragma: no cover
 
         return self._asarray(results)
