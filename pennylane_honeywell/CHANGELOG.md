@@ -4,7 +4,7 @@
 
 * For compatibility with PennyLane v0.15, the `analytic` keyword argument
   has been removed from usage within the Honeywell device.
-  [(#)](https://github.com/XanaduAI/pennylane-pq/pull/)
+  [(#13)](https://github.com/XanaduAI/pennylane-honeywell/pull/13)
 
 ### Contributors
 
