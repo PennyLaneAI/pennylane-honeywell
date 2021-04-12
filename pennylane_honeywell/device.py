@@ -100,7 +100,9 @@ class HQSDevice(QubitDevice):
 
     def __init__(self, wires, machine, shots=1000, api_key=None, retry_delay=2):
         if shots is None:
-            raise ValueError("The honeywell.hqs device does not support analytic expectation values")
+            raise ValueError(
+                "The honeywell.hqs device does not support analytic expectation values"
+            )
 
         super().__init__(wires=wires, shots=shots)
         self.machine = machine
