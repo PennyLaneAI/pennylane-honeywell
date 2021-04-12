@@ -464,3 +464,8 @@ class TestHQSDeviceIntegration:
         res = circuit()
         expected = (-1) ** np.array(wire_flip_idx)
         assert np.all(expected == res)
+
+    def test_analytic_error(self):
+        """Test that instantiating the device with `shots=None` results in an error"""
+        with pytest.raises(ValueError, match="does not support analytic"):
+            dev = qml.device("honeywell.hqs", wires=2, machine=None, shots=None)

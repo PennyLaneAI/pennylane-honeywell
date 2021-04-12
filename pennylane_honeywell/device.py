@@ -99,7 +99,10 @@ class HQSDevice(QubitDevice):
     API_HEADER_KEY = "x-api-key"
 
     def __init__(self, wires, machine, shots=1000, api_key=None, retry_delay=2):
-        super().__init__(wires=wires, shots=shots, analytic=False)
+        if shots is None:
+            raise ValueError("The honeywell.hqs device does not support analytic expectation values")
+
+        super().__init__(wires=wires, shots=shots)
         self.machine = machine
         self.shots = shots
         self._retry_delay = retry_delay
