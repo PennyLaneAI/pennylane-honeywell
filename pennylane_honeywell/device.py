@@ -173,18 +173,10 @@ class HQSDevice(QubitDevice):
         """
         return set(self._operation_map.keys())
 
-    def execute(self, circuit, **kwargs):
+    def execute(self, tape, **kwargs):
 
         self.check_validity(circuit.operations, circuit.observables)
-
-        try:
-            self._circuit_hash = circuit.graph.hash
-            circuit_str = circuit.graph.to_openqasm()  # pragma: no cover
-
-        except AttributeError:  # pragma: no cover
-            # We're not in tape mode
-            self._circuit_hash = circuit.hash  # pragma: no cover
-            circuit_str = circuit.to_openqasm()  # pragma: no cover
+        circuit_str = circuit.to_openqasm()
 
         body = {**self.data, "program": circuit_str}
 
