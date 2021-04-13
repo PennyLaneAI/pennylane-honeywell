@@ -99,7 +99,12 @@ class HQSDevice(QubitDevice):
     API_HEADER_KEY = "x-api-key"
 
     def __init__(self, wires, machine, shots=1000, api_key=None, retry_delay=2):
-        super().__init__(wires=wires, shots=shots, analytic=False)
+        if shots is None:
+            raise ValueError(
+                "The honeywell.hqs device does not support analytic expectation values"
+            )
+
+        super().__init__(wires=wires, shots=shots)
         self.machine = machine
         self.shots = shots
         self._retry_delay = retry_delay
@@ -168,18 +173,10 @@ class HQSDevice(QubitDevice):
         """
         return set(self._operation_map.keys())
 
-    def execute(self, circuit, **kwargs):
+    def execute(self, tape, **kwargs):
 
-        self.check_validity(circuit.operations, circuit.observables)
-
-        try:
-            self._circuit_hash = circuit.graph.hash
-            circuit_str = circuit.graph.to_openqasm()  # pragma: no cover
-
-        except AttributeError:  # pragma: no cover
-            # We're not in tape mode
-            self._circuit_hash = circuit.hash  # pragma: no cover
-            circuit_str = circuit.to_openqasm()  # pragma: no cover
+        self.check_validity(tape.operations, tape.observables)
+        circuit_str = tape.to_openqasm()
 
         body = {**self.data, "program": circuit_str}
 
@@ -219,12 +216,12 @@ class HQSDevice(QubitDevice):
         self._samples = self.generate_samples()
 
         # compute the required statistics
-        results = self.statistics(circuit.observables)
+        results = self.statistics(tape.observables)
 
         # Ensures that a combination with sample does not put
         # expvals and vars in superfluous arrays
-        all_sampled = all(obs.return_type is Sample for obs in circuit.observables)
-        if circuit.is_sampled and not all_sampled:
+        all_sampled = all(obs.return_type is Sample for obs in tape.observables)
+        if tape.is_sampled and not all_sampled:
             return self._asarray(results, dtype="object")  # pragma: no cover
 
         return self._asarray(results)
