@@ -1,18 +1,16 @@
-# Release 0.15.0-dev
-
-### New features since last release
-
-### Breaking changes
-
-### Improvements
-
-### Documentation
+# Release 0.15.0
 
 ### Bug fixes
+
+* For compatibility with PennyLane v0.15, the `analytic` keyword argument
+  has been removed from usage within the Honeywell device.
+  [(#13)](https://github.com/XanaduAI/pennylane-honeywell/pull/13)
 
 ### Contributors
 
 This release contains contributions from (in alphabetical order):
+
+Josh Izaac
 
 ---
 

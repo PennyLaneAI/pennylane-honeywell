@@ -24,7 +24,7 @@ with open("pennylane_honeywell/_version.py") as f:
 # Requirements should be as minimal as possible.
 # Avoid pinning, and use minimum version numbers
 # only where required.
-requirements = ["pennylane @ git+https://github.com/PennyLaneAI/pennylane.git@master", "requests"]
+requirements = ["pennylane>=0.15", "requests"]
 
 info = {
     # 'name' is the name that will be used by pip for installation
