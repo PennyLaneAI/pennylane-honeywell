@@ -1,2 +1,2 @@
-pennylane>=0.15
+git+https://github.com/PennyLaneAI/pennylane.git@master
 requests
