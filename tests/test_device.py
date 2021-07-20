@@ -202,22 +202,19 @@ class TestHQSDeviceIntegration:
     def test_invalid_op_exception(self):
         """Tests whether an exception is raised if the circuit is
         passed an unsupported operation."""
-
         dev = HQSDevice(2, machine=DUMMY_MACHINE, api_key=SOME_API_KEY)
 
-        U = np.array(
-            [
-                [0.6569534 + 0.35252813j, 0.56815252 + 0.34833727j],
-                [-0.56815252 - 0.34833727j, 0.61216718 + 0.42557631j],
-            ]
-        )
+        class DummyOp(qml.operation.Operation):
+            num_params = 0
+            num_wires = 1
+            par_domain = None
 
         @qml.qnode(dev)
         def circuit():
-            qml.QubitUnitary(U, wires=0)
+            DummyOp(wires=[0])
             return qml.expval(qml.PauliZ(0))
 
-        with pytest.raises(qml.DeviceError, match="Gate QubitUnitary not supported"):
+        with pytest.raises(qml.DeviceError, match="Gate DummyOp not supported"):
             circuit()
 
     @pytest.mark.parametrize("num_wires", [1, 3])
