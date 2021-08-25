@@ -180,7 +180,11 @@ class HQSDevice(QubitDevice):
         return set(self._operation_map.keys())
 
     def get_job_submission_header(self):
-        #TODO: docstring
+        """Create a header required for job submission.
+
+        Returns:
+            dict: the header required for job submission
+        """
         access_token = self.cred.access_token
         header = {
             "Content-Type": "application/json",
@@ -189,7 +193,11 @@ class HQSDevice(QubitDevice):
         return header
 
     def get_job_retrieval_header(self):
-        #TODO: docstring
+        """Create a header required for job retrieval.
+
+        Returns:
+            dict: the header required for job retrieval
+        """
         access_token = self.cred.access_token
         header = {
             "Authorization": access_token,
@@ -197,7 +205,14 @@ class HQSDevice(QubitDevice):
         return header
 
     def _submit_circuit(self, tape):
-        #TODO: docstring
+        """Submits a circuit for execution.
+
+        Args:
+            tape (QuantumTape): the circuit to submit
+
+        Returns:
+            dict: the header required for job retrieval
+        """
         circuit_str = tape.to_openqasm()
         body = {**self.data, "program": circuit_str}
 
@@ -205,8 +220,14 @@ class HQSDevice(QubitDevice):
         return requests.post(self.hostname, json.dumps(body), headers=header)
 
     def _query_results(self, job_data):
-        #TODO: docstring
+        """Queries the results for a specific job.
 
+        Args:
+            job_data (str): the response obtained after submitting a job
+
+        Returns:
+            str: the response with the job results
+        """
         # Extract the job ID from the response
         job_id = job_data["job"]
         job_endpoint = "/".join([self.hostname, job_id])

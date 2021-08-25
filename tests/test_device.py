@@ -1,4 +1,4 @@
-# Copyright 2020 Xanadu Quantum Technologies Inc.
+# Copyright 2020-2021 Xanadu Quantum Technologies Inc.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@ import os
 import pytest
 import appdirs
 import requests
-import pytest
+import json
 
 import pennylane as qml
 import numpy as np
@@ -45,6 +45,19 @@ user = "{}"
 """.format(
     SOME_API_KEY
 )
+
+def get_example_tape_with_qasm():
+    with qml.tape.QuantumTape() as tape:
+        qml.RY(0.2, wires=1)
+        qml.CNOT(wires=[0, 1])
+        qml.expval(qml.PauliY(0))
+
+    tape_openqasm = 'OPENQASM 2.0;\ninclude "qelib1.inc";\nqreg q[2];\ncreg '\
+                    'c[2];\nry(0.2) q[0];\ncx q[1],q[0];\nz q[1];\ns q[1];\nh q[1];\nmeasure q[0] -> '\
+                    'c[0];\nmeasure q[1] -> c[1];\n'
+
+    return tape, tape_openqasm
+
 
 MOCK_RESULTS = ["00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
 
@@ -178,6 +191,55 @@ class TestHQSDevice:
             "Authorization": SOME_ACCESS_TOKEN,
         }
         assert dev.get_job_retrieval_header() == expected
+
+    def test_submit_circuit_method(self, monkeypatch):
+        """Tests that the ``_submit_circuit`` method sends a request adhering
+        to the Honeywell API specs."""
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user=SOME_API_KEY)
+        SOME_ACCESS_TOKEN = "XYZ789"
+        monkeypatch.setattr(pennylane_honeywell.device.Credentials, "access_token", SOME_ACCESS_TOKEN)
+
+        res = []
+        monkeypatch.setattr(requests, "post", lambda hostname, body, headers: res.append(tuple([hostname, body, headers])))
+
+
+        tape, tape_openqasm = get_example_tape_with_qasm()
+
+        expected_data = {
+            "machine": DUMMY_MACHINE,
+            "language": dev.LANGUAGE,
+            "count": dev.shots,
+            "options": None,
+        }
+
+        expected_body = {**expected_data, "program": tape_openqasm}
+        expected_header = {
+            "Content-Type": "application/json",
+            "Authorization": SOME_ACCESS_TOKEN,
+        }
+        dev._submit_circuit(tape)
+
+        assert len(res) == 1
+        hostname, body, headers = res[0]
+        assert hostname == dev.hostname
+        assert body == json.dumps(expected_body)
+        assert headers == expected_header
+
+    def test_query_results(self, monkeypatch):
+        """Tests that the ``_query_results`` method sends a request adhering to
+        the Honeywell API specs."""
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user=SOME_API_KEY, retry_delay=0.01)
+        SOME_ACCESS_TOKEN = "XYZ789"
+        monkeypatch.setattr(pennylane_honeywell.device.Credentials, "access_token", SOME_ACCESS_TOKEN)
+
+        mock_response = MockResponse()
+        monkeypatch.setattr(requests, "get", lambda *args, **kwargs: mock_response)
+
+        SOME_JOB_ID = "JOB123"
+        mock_job_data = {"job": SOME_JOB_ID, "status": "not completed!"}
+        res = dev._query_results(mock_job_data)
+
+        assert res == mock_response.mock_get_response
 
     def test_user_not_found_error(self, monkeypatch, tmpdir):
         """Tests that an error is thrown with the device is created without
