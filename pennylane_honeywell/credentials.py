@@ -70,7 +70,7 @@ logger = logging.getLogger(__name__)
 
 
 class HoneywellCredentialsError(HoneywellError):
-    """ Base class for errors raised during credential management """
+    """Base class for errors raised during credential management"""
 
     pass
 
@@ -120,7 +120,7 @@ class Credentials:
             self.keyring_service = "HQS-API"
 
     def _get_credentials(self, pwd_prompt=True):
-        """ Method to ask for user's credentials """
+        """Method to ask for user's credentials"""
         user_name = self.user_name
         if user_name and pwd_prompt:
             pwd = getpass(prompt="Enter your password: ")
@@ -169,7 +169,7 @@ class Credentials:
         return self._login()
 
     def _request_tokens(self, body):
-        """ Method to send login request to machine api and save tokens. """
+        """Method to send login request to machine api and save tokens."""
         try:
             sess = RetrySession(self.url, proxies=self.proxies)
 
@@ -322,11 +322,11 @@ class Credentials:
         )
 
     def load_config(self, filename=DEFAULT_QISKITRC_FILE):
-        """ Read credential information from file """
+        """Read credential information from file"""
         self._load_from_qiskitrc(filename)
 
     def save_config(self, filename=DEFAULT_QISKITRC_FILE, overwrite=False):
-        """ Store credential information in a file """
+        """Store credential information in a file"""
         self._save_qiskitrc(overwrite, filename)
 
     def _save_qiskitrc(self, overwrite=False, filename=DEFAULT_QISKITRC_FILE):
@@ -356,5 +356,5 @@ class Credentials:
             config_parser.write(conf_file)
 
     def remove_creds(self):
-        """ Remove access/refresh tokens from keyring """
+        """Remove access/refresh tokens from keyring"""
         self._delete_tokens()
