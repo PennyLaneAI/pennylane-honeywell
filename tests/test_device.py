@@ -75,7 +75,7 @@ REF_RESULTS_110 = ["110"] * 10
 
 
 class MockResponse:
-    def __init__(self, num_calls = 0):
+    def __init__(self, num_calls=0):
         self.status_code = 200
         self.mock_post_response = {
             "job": "bf668869b6b74909a7e1fad2d7a0f932",
@@ -243,7 +243,9 @@ class TestHQSDevice:
         the Honeywell API specs."""
         dev = HQSDevice(3, machine=DUMMY_MACHINE, user=SOME_API_KEY, retry_delay=0.1)
         SOME_ACCESS_TOKEN = "XYZ789"
-        monkeypatch.setattr(pennylane_honeywell.device.Credentials, "access_token", SOME_ACCESS_TOKEN)
+        monkeypatch.setattr(
+            pennylane_honeywell.device.Credentials, "access_token", SOME_ACCESS_TOKEN
+        )
 
         # set num_calls=1 as the job was already submitted in cases when we get
         # the result
@@ -275,7 +277,9 @@ class TestHQSDevice:
         is gathered."""
         dev = HQSDevice(3, machine=DUMMY_MACHINE, user=SOME_API_KEY, retry_delay=0.01)
         SOME_ACCESS_TOKEN = "XYZ789"
-        monkeypatch.setattr(pennylane_honeywell.device.Credentials, "access_token", SOME_ACCESS_TOKEN)
+        monkeypatch.setattr(
+            pennylane_honeywell.device.Credentials, "access_token", SOME_ACCESS_TOKEN
+        )
 
         mock_response = MockResponse()
         monkeypatch.setattr(requests, "get", lambda *args, **kwargs: mock_response)
