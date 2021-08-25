@@ -75,7 +75,7 @@ REF_RESULTS_110 = ["110"] * 10
 
 
 class MockResponse:
-    def __init__(self):
+    def __init__(self, num_calls = 0):
         self.status_code = 200
         self.mock_post_response = {
             "job": "bf668869b6b74909a7e1fad2d7a0f932",
@@ -92,7 +92,7 @@ class MockResponse:
             "result-date": "2020-06-05T16:30:41.000031",
             "results": {"c": ["00"] * 10},
         }
-        self.num_calls = 0
+        self.num_calls = num_calls
 
     def json(self):
         if self.num_calls == 0:
@@ -209,11 +209,11 @@ class TestHQSDevice:
             pennylane_honeywell.device.Credentials, "access_token", SOME_ACCESS_TOKEN
         )
 
-        res = []
+        call_history = []
         monkeypatch.setattr(
             requests,
             "post",
-            lambda hostname, body, headers: res.append(tuple([hostname, body, headers])),
+            lambda hostname, body, headers: call_history.append(tuple([hostname, body, headers])),
         )
 
         tape, tape_openqasm = get_example_tape_with_qasm()
@@ -232,8 +232,8 @@ class TestHQSDevice:
         }
         dev._submit_circuit(tape)
 
-        assert len(res) == 1
-        hostname, body, headers = res[0]
+        assert len(call_history) == 1
+        hostname, body, headers = call_history[0]
         assert hostname == dev.hostname
         assert body == json.dumps(expected_body)
         assert headers == expected_header
@@ -241,11 +241,41 @@ class TestHQSDevice:
     def test_query_results(self, monkeypatch):
         """Tests that the ``_query_results`` method sends a request adhering to
         the Honeywell API specs."""
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user=SOME_API_KEY, retry_delay=0.1)
+        SOME_ACCESS_TOKEN = "XYZ789"
+        monkeypatch.setattr(pennylane_honeywell.device.Credentials, "access_token", SOME_ACCESS_TOKEN)
+
+        # set num_calls=1 as the job was already submitted in cases when we get
+        # the result
+        mock_response = MockResponse(num_calls=1)
+
+        call_history = []
+
+        def wrapper(job_endpoint, headers):
+            call_history.append(tuple([job_endpoint, headers]))
+            return mock_response
+
+        monkeypatch.setattr(requests, "get", wrapper)
+
+        SOME_JOB_ID = "JOB123"
+        mock_job_data = {"job": SOME_JOB_ID, "status": "not completed!"}
+        res = dev._query_results(mock_job_data)
+
+        expected_header = {
+            "Authorization": SOME_ACCESS_TOKEN,
+        }
+
+        assert len(call_history) == 1
+        job_endpoint, headers = call_history[0]
+        assert job_endpoint == "/".join([dev.hostname, SOME_JOB_ID])
+        assert headers == expected_header
+
+    def test_query_results_expected_response(self, monkeypatch):
+        """Tests that using the ``_query_results`` method an expected response
+        is gathered."""
         dev = HQSDevice(3, machine=DUMMY_MACHINE, user=SOME_API_KEY, retry_delay=0.01)
         SOME_ACCESS_TOKEN = "XYZ789"
-        monkeypatch.setattr(
-            pennylane_honeywell.device.Credentials, "access_token", SOME_ACCESS_TOKEN
-        )
+        monkeypatch.setattr(pennylane_honeywell.device.Credentials, "access_token", SOME_ACCESS_TOKEN)
 
         mock_response = MockResponse()
         monkeypatch.setattr(requests, "get", lambda *args, **kwargs: mock_response)
