@@ -120,6 +120,15 @@ class Credentials:
             self.url = urljoin(_API_URL, self.api_version)
             self.keyring_service = 'HQS-API'
 
+    def _get_credentials(self, pwd_prompt=True):
+        """ Method to ask for user's credentials """
+        user_name = self.user_name
+        if user_name and pwd_prompt:
+            pwd = getpass(prompt='Enter your password: ')
+        else:
+            pwd = None
+        return user_name, pwd
+
     @staticmethod
     def _canonicalize_url(url):
         """ Provided a URL, determine if it is near-enough to expected to
@@ -186,15 +195,6 @@ class Credentials:
         except requests.exceptions.RequestException as exception:
             print(exception)
             return None, None
-
-    def _get_credentials(self, pwd_prompt=True):
-        """ Method to ask for user's credentials """
-        user_name = self.user_name
-        if user_name and pwd_prompt:
-            pwd = getpass(prompt='Enter your password: ')
-        else:
-            pwd = None
-        return user_name, pwd
 
     def _authenticate(self, action=None):
         """ This method makes requests to refresh or get new id-token.

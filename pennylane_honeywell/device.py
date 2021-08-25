@@ -29,6 +29,7 @@ import numpy as np
 
 from pennylane import QubitDevice, DeviceError
 from pennylane.operation import Sample
+from pennylane_honeywell.credentials import Credentials
 
 from ._version import __version__
 
@@ -70,7 +71,7 @@ class HQSDevice(QubitDevice):
         machine (str): name of the Honeywell machine to execute on
         shots (int): number of circuit evaluations/random samples used
             to estimate expectation values of observables
-        api_key (str): The HQS API key. If not provided, the environment
+        user (str): The HQS API key. If not provided, the environment
             variable ``HQS_TOKEN`` is used.
         retry_delay (float): The time (in seconds) to wait between requests
             to the remote server when checking for completion of circuit
@@ -93,30 +94,36 @@ class HQSDevice(QubitDevice):
     BASE_HOSTNAME = "https://qapi.honeywell.com/v1"
     TARGET_PATH = "job"
     TERMINAL_STATUSES = ["failed", "completed", "cancelled"]
-    PRIORITY = "normal"
     LANGUAGE = "OPENQASM 2.0"
     DEFAULT_BACKEND = "HQS-LT-1.0-APIVAL"
     API_HEADER_KEY = "x-api-key"
 
-    def __init__(self, wires, machine, shots=1000, api_key=None, retry_delay=2):
+    def __init__(self, wires, machine, shots=1000, user=None, retry_delay=2):
         if shots is None:
             raise ValueError(
                 "The honeywell.hqs device does not support analytic expectation values"
+            )
+
+        if shots< 1 or shots> 10000:
+            raise ValueError(
+                "Honeywell only supports shots to be between 1 and 10,000 when running a job."
             )
 
         super().__init__(wires=wires, shots=shots)
         self.machine = machine
         self.shots = shots
         self._retry_delay = retry_delay
-        self._api_key = api_key
+
+        self._user = user
         self.set_api_configs()
+
         self.data = {
             "machine": self.machine,
             "language": self.LANGUAGE,
-            "priority": self.PRIORITY,
             "count": self.shots,
             "options": None,
         }
+
         self.reset()
 
     def reset(self):
@@ -128,13 +135,12 @@ class HQSDevice(QubitDevice):
         """
         Set the configurations needed to connect to HQS API.
         """
-        self._api_key = self._api_key or os.getenv("HQS_TOKEN")
-        if not self._api_key:
-            raise ValueError("No valid api key for HQS platform found.")
-        self.header = {
-            "User-Agent": "pennylane-honeywell_v{}".format(__version__),
-            self.API_HEADER_KEY: self._api_key,
-        }
+        self._user = self._user or os.getenv("HQS_USER")
+        if not self._user:
+            raise ValueError("No user name for HQS platform found.")
+
+        self.cred = Credentials(user_name=self._user)
+
         self.hostname = "/".join([self.BASE_HOSTNAME, self.TARGET_PATH])
 
     @property
@@ -173,6 +179,15 @@ class HQSDevice(QubitDevice):
         """
         return set(self._operation_map.keys())
 
+    @property
+    def job_submission_header():
+        access_token = self.cred.access_token
+        header = {
+            "Content-Type": "application/json",
+            "Authorization": access_token,
+        }
+        return header
+
     def execute(self, tape, **kwargs):
 
         self.check_validity(tape.operations, tape.observables)
@@ -180,7 +195,8 @@ class HQSDevice(QubitDevice):
 
         body = {**self.data, "program": circuit_str}
 
-        response = requests.post(self.hostname, json.dumps(body), headers=self.header)
+        header = self.job_submission_header
+        response = requests.post(self.hostname, json.dumps(body), headers=header)
         response.raise_for_status()
 
         job_data = response.json()
