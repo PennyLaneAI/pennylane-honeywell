@@ -180,7 +180,8 @@ class HQSDevice(QubitDevice):
         return set(self._operation_map.keys())
 
     @property
-    def job_submission_header():
+    def job_submission_header(self):
+        #TODO: docstring
         access_token = self.cred.access_token
         header = {
             "Content-Type": "application/json",
@@ -188,28 +189,48 @@ class HQSDevice(QubitDevice):
         }
         return header
 
-    def execute(self, tape, **kwargs):
+    @property
+    def job_retrieval_header(self):
+        #TODO: docstring
+        access_token = self.cred.access_token
+        header = {
+            "Authorization": access_token,
+        }
+        return header
 
-        self.check_validity(tape.operations, tape.observables)
+    def _submit_circuit(self, tape):
+        #TODO: docstring
         circuit_str = tape.to_openqasm()
-
         body = {**self.data, "program": circuit_str}
 
         header = self.job_submission_header
-        response = requests.post(self.hostname, json.dumps(body), headers=header)
-        response.raise_for_status()
+        return requests.post(self.hostname, json.dumps(body), headers=header)
 
-        job_data = response.json()
-
-        job_id = job_data["job"]
+    def _query_results(self, job_id):
+        #TODO: docstring
         job_endpoint = "/".join([self.hostname, job_id])
 
         while job_data["status"] not in self.TERMINAL_STATUSES:
             sleep(self.retry_delay)
-            response = requests.get(job_endpoint, headers=self.header)
+            header = self.job_retrieval_header
+            response = requests.get(job_endpoint, headers=header)
             response.raise_for_status()
 
             job_data = response.json()
+        return job_data
+
+    def execute(self, tape, **kwargs):
+
+        self.check_validity(tape.operations, tape.observables)
+        response = self._submit_circuit(tape)
+
+        response.raise_for_status()
+
+        job_data = response.json()
+
+        # Extract the job ID from the response
+        job_id = job_data["job"]
+        job_data = self._query_results(job_id)
 
         if job_data["status"] == "failed":
             raise DeviceError("Job failed in remote backend.")

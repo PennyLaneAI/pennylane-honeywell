@@ -105,15 +105,15 @@ class TestHQSDevice:
         assert dev.data == {
             "machine": DUMMY_MACHINE,
             "language": "OPENQASM 2.0",
-            "priority": "normal",
             "count": shots,
             "options": None,
         }
         assert dev._results is None
         assert dev._samples is None
         assert dev.BASE_HOSTNAME == BASE_HOSTNAME
-        assert API_HEADER_KEY in dev.header.keys()
-        assert dev.header[API_HEADER_KEY] == SOME_API_KEY
+        dev.job_submission_header
+        #assert API_HEADER_KEY in dev.header.keys()
+        #assert dev.header[API_HEADER_KEY] == SOME_API_KEY
 
     def test_reset(self):
         """Tests that the ``reset`` method corretly resets data."""
@@ -466,3 +466,10 @@ class TestHQSDeviceIntegration:
         """Test that instantiating the device with `shots=None` results in an error"""
         with pytest.raises(ValueError, match="does not support analytic"):
             dev = qml.device("honeywell.hqs", wires=2, machine=None, shots=None)
+
+    @pytest.mark.parametrize("shots", [-1, 100000])
+    def test_incorrect_shots(self, shots):
+        """Test that instantiating the device with incorrect number of shots
+        results in an error"""
+        with pytest.raises(ValueError, match="Honeywell only supports shots to be between"):
+            dev = qml.device("honeywell.hqs", wires=2, machine=None, user="someuser", shots=shots)
