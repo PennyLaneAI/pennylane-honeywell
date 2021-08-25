@@ -154,6 +154,40 @@ class TestHQSDevice:
         assert dev.hostname == "https://server.someaddress.com/some/path"
         assert dev.cred.user_name == new_user
 
+    def test_get_job_submission_header(self, monkeypatch):
+        """Tests that the ``get_job_submission_header`` method properly returns
+        the correct header."""
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user=SOME_API_KEY)
+        SOME_ACCESS_TOKEN = "XYZ789"
+        monkeypatch.setattr(pennylane_honeywell.device.Credentials, "access_token", SOME_ACCESS_TOKEN)
+
+        expected = {
+            "Content-Type": "application/json",
+            "Authorization": SOME_ACCESS_TOKEN,
+        }
+        assert dev.get_job_submission_header() == expected
+
+    def test_get_job_retrieval_header(self, monkeypatch):
+        """Tests that the ``get_job_retrieval_header`` method properly returns
+        the correct header."""
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user=SOME_API_KEY)
+        SOME_ACCESS_TOKEN = "XYZ789"
+        monkeypatch.setattr(pennylane_honeywell.device.Credentials, "access_token", SOME_ACCESS_TOKEN)
+
+        expected = {
+            "Authorization": SOME_ACCESS_TOKEN,
+        }
+        assert dev.get_job_retrieval_header() == expected
+
+    def get_job_submission_header(self):
+        #TODO: docstring
+        access_token = self.cred.access_token
+        header = {
+            "Content-Type": "application/json",
+            "Authorization": access_token,
+        }
+        return header
+
     def test_user_not_found_error(self, monkeypatch, tmpdir):
         """Tests that an error is thrown with the device is created without
         a valid API token."""
