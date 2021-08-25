@@ -53,6 +53,7 @@
 """Exceptions related to the Honeywell Api. This file has been altered from the
 original Qiskit Honeywell provider implementation."""
 
+
 class HoneywellError(Exception):
     pass
 
@@ -81,6 +82,7 @@ class ApiError(HoneywellError):
 
 class RequestsApiError(ApiError):
     """Exception re-raising a RequestException."""
+
     def __init__(self, original_exception, *args, **kwargs):
         self.original_exception = original_exception
         super().__init__(*args, **kwargs)

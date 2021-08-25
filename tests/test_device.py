@@ -46,15 +46,18 @@ user = "{}"
     SOME_API_KEY
 )
 
+
 def get_example_tape_with_qasm():
     with qml.tape.QuantumTape() as tape:
         qml.RY(0.2, wires=1)
         qml.CNOT(wires=[0, 1])
         qml.expval(qml.PauliY(0))
 
-    tape_openqasm = 'OPENQASM 2.0;\ninclude "qelib1.inc";\nqreg q[2];\ncreg '\
-                    'c[2];\nry(0.2) q[0];\ncx q[1],q[0];\nz q[1];\ns q[1];\nh q[1];\nmeasure q[0] -> '\
-                    'c[0];\nmeasure q[1] -> c[1];\n'
+    tape_openqasm = (
+        'OPENQASM 2.0;\ninclude "qelib1.inc";\nqreg q[2];\ncreg '
+        "c[2];\nry(0.2) q[0];\ncx q[1],q[0];\nz q[1];\ns q[1];\nh q[1];\nmeasure q[0] -> "
+        "c[0];\nmeasure q[1] -> c[1];\n"
+    )
 
     return tape, tape_openqasm
 
@@ -100,6 +103,7 @@ class MockResponse:
 
     def raise_for_status(self):
         pass
+
 
 class TestHQSDevice:
     """Tests for the HQSDevice base class."""
@@ -172,7 +176,9 @@ class TestHQSDevice:
         the correct header."""
         dev = HQSDevice(3, machine=DUMMY_MACHINE, user=SOME_API_KEY)
         SOME_ACCESS_TOKEN = "XYZ789"
-        monkeypatch.setattr(pennylane_honeywell.device.Credentials, "access_token", SOME_ACCESS_TOKEN)
+        monkeypatch.setattr(
+            pennylane_honeywell.device.Credentials, "access_token", SOME_ACCESS_TOKEN
+        )
 
         expected = {
             "Content-Type": "application/json",
@@ -185,7 +191,9 @@ class TestHQSDevice:
         the correct header."""
         dev = HQSDevice(3, machine=DUMMY_MACHINE, user=SOME_API_KEY)
         SOME_ACCESS_TOKEN = "XYZ789"
-        monkeypatch.setattr(pennylane_honeywell.device.Credentials, "access_token", SOME_ACCESS_TOKEN)
+        monkeypatch.setattr(
+            pennylane_honeywell.device.Credentials, "access_token", SOME_ACCESS_TOKEN
+        )
 
         expected = {
             "Authorization": SOME_ACCESS_TOKEN,
@@ -197,11 +205,16 @@ class TestHQSDevice:
         to the Honeywell API specs."""
         dev = HQSDevice(3, machine=DUMMY_MACHINE, user=SOME_API_KEY)
         SOME_ACCESS_TOKEN = "XYZ789"
-        monkeypatch.setattr(pennylane_honeywell.device.Credentials, "access_token", SOME_ACCESS_TOKEN)
+        monkeypatch.setattr(
+            pennylane_honeywell.device.Credentials, "access_token", SOME_ACCESS_TOKEN
+        )
 
         res = []
-        monkeypatch.setattr(requests, "post", lambda hostname, body, headers: res.append(tuple([hostname, body, headers])))
-
+        monkeypatch.setattr(
+            requests,
+            "post",
+            lambda hostname, body, headers: res.append(tuple([hostname, body, headers])),
+        )
 
         tape, tape_openqasm = get_example_tape_with_qasm()
 
@@ -230,7 +243,9 @@ class TestHQSDevice:
         the Honeywell API specs."""
         dev = HQSDevice(3, machine=DUMMY_MACHINE, user=SOME_API_KEY, retry_delay=0.01)
         SOME_ACCESS_TOKEN = "XYZ789"
-        monkeypatch.setattr(pennylane_honeywell.device.Credentials, "access_token", SOME_ACCESS_TOKEN)
+        monkeypatch.setattr(
+            pennylane_honeywell.device.Credentials, "access_token", SOME_ACCESS_TOKEN
+        )
 
         mock_response = MockResponse()
         monkeypatch.setattr(requests, "get", lambda *args, **kwargs: mock_response)
@@ -279,6 +294,7 @@ class TestHQSDevice:
         assert res.shape == (dev.shots, dev.num_wires)
         assert np.all(res == expected_array)
 
+
 class TestHQSDeviceIntegration:
     """Integration tests of HQSDevice base class with PennyLane"""
 
@@ -305,8 +321,9 @@ class TestHQSDeviceIntegration:
     def test_load_from_device_function(self, num_wires, shots):
         """Tests that the HQSDevice can be loaded from PennyLane `device` function."""
 
-        dev = qml.device("honeywell.hqs", wires=num_wires, machine=DUMMY_MACHINE,
-                         shots=shots, user=SOME_API_KEY)
+        dev = qml.device(
+            "honeywell.hqs", wires=num_wires, machine=DUMMY_MACHINE, shots=shots, user=SOME_API_KEY
+        )
 
         assert dev.num_wires == num_wires
         assert dev.shots == shots
@@ -408,7 +425,14 @@ class TestHQSDeviceIntegration:
         """Tests that a PennyLane QNode successfully executes with a
         mocked out online API."""
 
-        dev = qml.device("honeywell.hqs", wires=2, machine=DUMMY_MACHINE, shots=10, retry_delay=0.01, user=SOME_API_KEY)
+        dev = qml.device(
+            "honeywell.hqs",
+            wires=2,
+            machine=DUMMY_MACHINE,
+            shots=10,
+            retry_delay=0.01,
+            user=SOME_API_KEY,
+        )
 
         @qml.qnode(dev)
         def circuit(x, y):
@@ -422,7 +446,9 @@ class TestHQSDeviceIntegration:
         monkeypatch.setattr(requests, "post", lambda *args, **kwargs: mock_response)
         monkeypatch.setattr(requests, "get", lambda *args, **kwargs: mock_response)
         monkeypatch.setattr(requests.Session, "request", lambda *args, **kwargs: mock_response)
-        monkeypatch.setattr(pennylane_honeywell.device.Credentials, "_login", lambda *args, **kwargs: None)
+        monkeypatch.setattr(
+            pennylane_honeywell.device.Credentials, "_login", lambda *args, **kwargs: None
+        )
 
         circuit(0.5, 1.2)
         assert dev._results == MOCK_RESULTS
@@ -430,7 +456,14 @@ class TestHQSDeviceIntegration:
     def test_exception_failed_job(self, monkeypatch):
         """Tests that an exception is raised if the job status is `failed`."""
 
-        dev = qml.device("honeywell.hqs", wires=2, machine=DUMMY_MACHINE, shots=10, retry_delay=0.01, user=SOME_API_KEY)
+        dev = qml.device(
+            "honeywell.hqs",
+            wires=2,
+            machine=DUMMY_MACHINE,
+            shots=10,
+            retry_delay=0.01,
+            user=SOME_API_KEY,
+        )
 
         @qml.qnode(dev)
         def circuit(x, y):
@@ -446,7 +479,9 @@ class TestHQSDeviceIntegration:
         monkeypatch.setattr(requests, "post", lambda *args, **kwargs: mock_response)
         monkeypatch.setattr(requests, "get", lambda *args, **kwargs: mock_response)
         monkeypatch.setattr(requests.Session, "request", lambda *args, **kwargs: mock_response)
-        monkeypatch.setattr(pennylane_honeywell.device.Credentials, "_login", lambda *args, **kwargs: None)
+        monkeypatch.setattr(
+            pennylane_honeywell.device.Credentials, "_login", lambda *args, **kwargs: None
+        )
 
         with pytest.raises(qml.DeviceError, match="Job failed in remote backend."):
             circuit(0.5, 1.2)
@@ -455,7 +490,14 @@ class TestHQSDeviceIntegration:
         """Tests that an exception is raised if the job status is `cancelled`
         and no partial results were returned."""
 
-        dev = qml.device("honeywell.hqs", wires=2, machine=DUMMY_MACHINE, shots=10, retry_delay=0.01, user=SOME_API_KEY)
+        dev = qml.device(
+            "honeywell.hqs",
+            wires=2,
+            machine=DUMMY_MACHINE,
+            shots=10,
+            retry_delay=0.01,
+            user=SOME_API_KEY,
+        )
 
         @qml.qnode(dev)
         def circuit(x, y):
@@ -472,7 +514,9 @@ class TestHQSDeviceIntegration:
         monkeypatch.setattr(requests, "post", lambda *args, **kwargs: mock_response)
         monkeypatch.setattr(requests, "get", lambda *args, **kwargs: mock_response)
         monkeypatch.setattr(requests.Session, "request", lambda *args, **kwargs: mock_response)
-        monkeypatch.setattr(pennylane_honeywell.device.Credentials, "_login", lambda *args, **kwargs: None)
+        monkeypatch.setattr(
+            pennylane_honeywell.device.Credentials, "_login", lambda *args, **kwargs: None
+        )
 
         with pytest.raises(
             qml.DeviceError, match="Job was cancelled without returning any results"
@@ -483,7 +527,14 @@ class TestHQSDeviceIntegration:
         """Tests that a warning is given if the job status is `cancelled`
         and partial results were returned."""
 
-        dev = qml.device("honeywell.hqs", wires=2, machine=DUMMY_MACHINE, shots=10, retry_delay=0.01, user=SOME_API_KEY)
+        dev = qml.device(
+            "honeywell.hqs",
+            wires=2,
+            machine=DUMMY_MACHINE,
+            shots=10,
+            retry_delay=0.01,
+            user=SOME_API_KEY,
+        )
 
         @qml.qnode(dev)
         def circuit(x, y):
@@ -500,7 +551,9 @@ class TestHQSDeviceIntegration:
         monkeypatch.setattr(requests, "post", lambda *args, **kwargs: mock_response)
         monkeypatch.setattr(requests, "get", lambda *args, **kwargs: mock_response)
         monkeypatch.setattr(requests.Session, "request", lambda *args, **kwargs: mock_response)
-        monkeypatch.setattr(pennylane_honeywell.device.Credentials, "_login", lambda *args, **kwargs: None)
+        monkeypatch.setattr(
+            pennylane_honeywell.device.Credentials, "_login", lambda *args, **kwargs: None
+        )
 
         with pytest.warns(
             RuntimeWarning, match="Partial results returned from cancelled remote job."
@@ -527,7 +580,12 @@ class TestHQSDeviceIntegration:
         expectation value in PennyLane."""
         num_wires = len(wire_flip_idx)
         dev = qml.device(
-            "honeywell.hqs", wires=num_wires, machine=DUMMY_MACHINE, shots=10, retry_delay=0.01, user=SOME_API_KEY
+            "honeywell.hqs",
+            wires=num_wires,
+            machine=DUMMY_MACHINE,
+            shots=10,
+            retry_delay=0.01,
+            user=SOME_API_KEY,
         )
 
         # bit flip circuit
@@ -543,7 +601,9 @@ class TestHQSDeviceIntegration:
         monkeypatch.setattr(requests, "post", lambda *args, **kwargs: mock_response)
         monkeypatch.setattr(requests, "get", lambda *args, **kwargs: mock_response)
         monkeypatch.setattr(requests.Session, "request", lambda *args, **kwargs: mock_response)
-        monkeypatch.setattr(pennylane_honeywell.device.Credentials, "_login", lambda *args, **kwargs: None)
+        monkeypatch.setattr(
+            pennylane_honeywell.device.Credentials, "_login", lambda *args, **kwargs: None
+        )
 
         res = circuit()
         expected = (-1) ** np.array(wire_flip_idx)

@@ -64,7 +64,7 @@ STATUS_FORCELIST = (
     503,  # Service Unavailable
     504,  # Gateway Timeout
 )
-CLIENT_APPLICATION = 'qiskit-api-py'
+CLIENT_APPLICATION = "qiskit-api-py"
 
 
 class RetrySession(Session):
@@ -75,9 +75,16 @@ class RetrySession(Session):
     ``requests.Session``.
     """
 
-    def __init__(self, base_url, credentials=None,
-                 retries=5, backoff_factor=0.5,
-                 verify=True, proxies=None, auth=None):
+    def __init__(
+        self,
+        base_url,
+        credentials=None,
+        retries=5,
+        backoff_factor=0.5,
+        verify=True,
+        proxies=None,
+        auth=None,
+    ):
         """RetrySession constructor.
 
         Args:
@@ -98,12 +105,12 @@ class RetrySession(Session):
         self._initialize_session_parameters(verify, proxies or {}, auth)
 
     def update_auth(self):
-        """ Updates the headers with updated authorization, or removes
-            the authorization if credentials have been cleared. """
+        """Updates the headers with updated authorization, or removes
+        the authorization if credentials have been cleared."""
         if self._credentials is not None:
-            self.headers.update({'Authorization': self._credentials.access_token})
+            self.headers.update({"Authorization": self._credentials.access_token})
         else:
-            self.headers.pop('Authorization', None)
+            self.headers.pop("Authorization", None)
 
     @property
     def credentials(self):
@@ -131,8 +138,8 @@ class RetrySession(Session):
         )
 
         retry_adapter = HTTPAdapter(max_retries=retry)
-        self.mount('http://', retry_adapter)
-        self.mount('https://', retry_adapter)
+        self.mount("http://", retry_adapter)
+        self.mount("https://", retry_adapter)
 
     def _initialize_session_parameters(self, verify, proxies, auth):
         """Set the Session parameters and attributes.
@@ -142,7 +149,7 @@ class RetrySession(Session):
             proxies (dict): proxy URLs mapped by protocol.
             auth (AuthBase): authentication handler.
         """
-        self.headers.update({'X-Qx-Client-Application': CLIENT_APPLICATION})
+        self.headers.update({"X-Qx-Client-Application": CLIENT_APPLICATION})
 
         self.auth = auth
         self.proxies = proxies or {}
@@ -170,17 +177,16 @@ class RetrySession(Session):
         final_url = self.base_url + url
 
         try:
-            response = super().request(method,
-                                       final_url,
-                                       proxies=self.proxies['urls'] if self.proxies else {},
-                                       **kwargs)
+            response = super().request(
+                method, final_url, proxies=self.proxies["urls"] if self.proxies else {}, **kwargs
+            )
             response.raise_for_status()
         except RequestException as ex:
             # Wrap the requests exceptions into a Honeywell custom one, for
             # compatibility.
             message = str(ex)
             if self.credentials:
-                message = message.replace(self.credentials.access_token, '...')
+                message = message.replace(self.credentials.access_token, "...")
 
             raise RequestsApiError(ex, message) from None
 

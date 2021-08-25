@@ -62,15 +62,16 @@ import keyring
 from .session import RetrySession
 from .api_exceptions import HoneywellError
 
-_API_URL = 'https://qapi.honeywell.com'
-_API_VERSION = 'v1'
-DEFAULT_QISKITRC_FILE = Path.home()/'.qiskit'/'qhprc'
-SECTION_NAME = 'qiskit-honeywell-provider'
+_API_URL = "https://qapi.honeywell.com"
+_API_VERSION = "v1"
+DEFAULT_QISKITRC_FILE = Path.home() / ".qiskit" / "qhprc"
+SECTION_NAME = "qiskit-honeywell-provider"
 logger = logging.getLogger(__name__)
 
 
 class HoneywellCredentialsError(HoneywellError):
     """ Base class for errors raised during credential management """
+
     pass
 
 
@@ -79,10 +80,8 @@ class Credentials:
     Credentials class to encapsulate the data and operations around interacting
     with our credentialing service.
     """
-    def __init__(self,
-                 user_name: str = None,
-                 proxies: dict = None,
-                 api_url: str = None):
+
+    def __init__(self, user_name: str = None, proxies: dict = None, api_url: str = None):
         """
         Credentials Constructor
         """
@@ -112,26 +111,26 @@ class Credentials:
         if self.user_name:
             if self.api_url == _API_URL:
                 self.url = urljoin(_API_URL, self.api_version)
-                self.keyring_service = 'HQS-API'+self.user_name
+                self.keyring_service = "HQS-API" + self.user_name
             else:
                 self.url = urljoin(self.api_url, self.api_version)
-                self.keyring_service = 'HQS-API:'+self.url+":"+self.user_name
+                self.keyring_service = "HQS-API:" + self.url + ":" + self.user_name
         else:
             self.url = urljoin(_API_URL, self.api_version)
-            self.keyring_service = 'HQS-API'
+            self.keyring_service = "HQS-API"
 
     def _get_credentials(self, pwd_prompt=True):
         """ Method to ask for user's credentials """
         user_name = self.user_name
         if user_name and pwd_prompt:
-            pwd = getpass(prompt='Enter your password: ')
+            pwd = getpass(prompt="Enter your password: ")
         else:
             pwd = None
         return user_name, pwd
 
     @staticmethod
     def _canonicalize_url(url):
-        """ Provided a URL, determine if it is near-enough to expected to
+        """Provided a URL, determine if it is near-enough to expected to
         glean user-intent.  Wherever possible default to known good behavior
         or provide error message with suggestions.
         """
@@ -157,9 +156,9 @@ class Credentials:
             print("Error: URL {} didn't conform to expected form.".format(url))
             print("Using default url and version: {} and {}.".format(api_url, api_version))
         else:
-            api_url = "https://"+api_prefix+api_base
+            api_url = "https://" + api_prefix + api_base
             if api_version:
-                api_version = api_version.strip('/')
+                api_version = api_version.strip("/")
             else:
                 api_version = _API_VERSION
         return api_url, api_version
@@ -172,12 +171,11 @@ class Credentials:
     def _request_tokens(self, body):
         """ Method to send login request to machine api and save tokens. """
         try:
-            sess = RetrySession(self.url,
-                                proxies=self.proxies)
+            sess = RetrySession(self.url, proxies=self.proxies)
 
             # send request to login
             response = sess.post(
-                '/login',
+                "/login",
                 json=body,
             )
 
@@ -189,7 +187,7 @@ class Credentials:
 
             else:
                 print("***Successfully logged in***")
-                self._save_tokens(response.json()['id-token'], response.json()['refresh-token'])
+                self._save_tokens(response.json()["id-token"], response.json()["refresh-token"])
                 return response.status_code, None
 
         except requests.exceptions.RequestException as exception:
@@ -197,20 +195,20 @@ class Credentials:
             return None, None
 
     def _authenticate(self, action=None):
-        """ This method makes requests to refresh or get new id-token.
+        """This method makes requests to refresh or get new id-token.
         If a token refresh fails due to token being expired, credentials
         get requested from user.
         """
         # login body
         body = {}
 
-        if action == 'refresh':
-            body['refresh-token'] = self._get_token('refresh_token')
+        if action == "refresh":
+            body["refresh-token"] = self._get_token("refresh_token")
         else:
             # ask user for crendentials before making login request
             user_name, pwd = self._get_credentials()
-            body['email'] = user_name
-            body['password'] = pwd
+            body["email"] = user_name
+            body["password"] = pwd
 
             # clear credentials
             user_name = None
@@ -222,29 +220,29 @@ class Credentials:
         if status_code != HTTPStatus.OK:
             # check if we got an error because refresh token has expired
             if status_code in (HTTPStatus.FORBIDDEN, HTTPStatus.BAD_REQUEST):
-                print(message.get('error', {}).get('text', 'Request forbidden'))
+                print(message.get("error", {}).get("text", "Request forbidden"))
 
                 # ask user for credentials to login again
                 user_name, pwd = self._get_credentials()
-                body['email'] = user_name
-                body['password'] = pwd
+                body["email"] = user_name
+                body["password"] = pwd
 
                 # send login request to API
                 status_code, message = self._request_tokens(body)
 
         if status_code != HTTPStatus.OK:
-            raise RuntimeError('HTTP error while logging in:', status_code)
+            raise RuntimeError("HTTP error while logging in:", status_code)
 
     def _get_token(self, token_name: str):
-        """ Method to retrieve id and refresh tokens from system's keyring service.
+        """Method to retrieve id and refresh tokens from system's keyring service.
         Windows keyring backend has a length limitation on passwords.
         To avoid this, passwords get splitted up into two credentials.
         """
 
         token = None
 
-        token_first = keyring.get_password(self.keyring_service, '{}_first'.format(token_name))
-        token_second = keyring.get_password(self.keyring_service, '{}_second'.format(token_name))
+        token_first = keyring.get_password(self.keyring_service, "{}_first".format(token_name))
+        token_second = keyring.get_password(self.keyring_service, "{}_second".format(token_name))
 
         if token_first is not None and token_second is not None:
             token = token_first + token_second
@@ -252,64 +250,63 @@ class Credentials:
         return token
 
     def _save_tokens(self, id_token: str, refresh_token: str):
-        """ Method to save id and refresh tokens on system's keyring service.
+        """Method to save id and refresh tokens on system's keyring service.
         Windows keyring backend has a length limitation on passwords.
         To avoid this, passwords get splitted up into two credentials.
         """
 
         # save two id_token halves
-        id_token_first = id_token[:len(id_token)//2]
-        id_token_second = id_token[len(id_token)//2:]
-        keyring.set_password(self.keyring_service, 'id_token_first', id_token_first)
-        keyring.set_password(self.keyring_service, 'id_token_second', id_token_second)
+        id_token_first = id_token[: len(id_token) // 2]
+        id_token_second = id_token[len(id_token) // 2 :]
+        keyring.set_password(self.keyring_service, "id_token_first", id_token_first)
+        keyring.set_password(self.keyring_service, "id_token_second", id_token_second)
 
         # save refresh_token halves
-        refresh_token_first = refresh_token[:len(refresh_token)//2]
-        refresh_token_second = refresh_token[len(refresh_token)//2:]
-        keyring.set_password(self.keyring_service, 'refresh_token_first', refresh_token_first)
-        keyring.set_password(self.keyring_service, 'refresh_token_second', refresh_token_second)
+        refresh_token_first = refresh_token[: len(refresh_token) // 2]
+        refresh_token_second = refresh_token[len(refresh_token) // 2 :]
+        keyring.set_password(self.keyring_service, "refresh_token_first", refresh_token_first)
+        keyring.set_password(self.keyring_service, "refresh_token_second", refresh_token_second)
 
     def _delete_tokens(self):
-        """ Method to delete id and refresh tokens on system's keyring service.
-        """
-        keyring.delete_password(self.keyring_service, 'id_token_first')
-        keyring.delete_password(self.keyring_service, 'id_token_second')
-        keyring.delete_password(self.keyring_service, 'refresh_token_first')
-        keyring.delete_password(self.keyring_service, 'refresh_token_second')
+        """Method to delete id and refresh tokens on system's keyring service."""
+        keyring.delete_password(self.keyring_service, "id_token_first")
+        keyring.delete_password(self.keyring_service, "id_token_second")
+        keyring.delete_password(self.keyring_service, "refresh_token_first")
+        keyring.delete_password(self.keyring_service, "refresh_token_second")
 
     def _login(self) -> str:
-        """ This methods checks if we have a valid (non-expired) id-token
+        """This methods checks if we have a valid (non-expired) id-token
         and returns it, otherwise it gets a new one with refresh-token.
         If refresh-token doesn't exist, it asks user for credentials.
         """
         # check if id_token exists
-        id_token = self._get_token('id_token')
+        id_token = self._get_token("id_token")
         if id_token is None:
             # authenticate against '/login' endpoint
             self._authenticate()
 
             # get id_token
-            id_token = self._get_token('id_token')
+            id_token = self._get_token("id_token")
 
         # check id_token is not expired yet
-        expiration_date = jwt.decode(id_token, verify=False, algorithms=["RS256"])['exp']
+        expiration_date = jwt.decode(id_token, verify=False, algorithms=["RS256"])["exp"]
         if expiration_date < (datetime.datetime.now(datetime.timezone.utc).timestamp()):
             print("Your id token is expired. Refreshing...")
 
             # get refresh_token
-            self.refresh_token = self._get_token('refresh_token')
+            self.refresh_token = self._get_token("refresh_token")
             if self.refresh_token is not None:
-                self._authenticate('refresh')
+                self._authenticate("refresh")
             else:
                 self._authenticate()
 
             # get id_token
-            id_token = self._get_token('id_token')
+            id_token = self._get_token("id_token")
 
         return id_token
 
     def _load_from_qiskitrc(self, filename):
-        """ Attempts to read credentials from qiskitrc file
+        """Attempts to read credentials from qiskitrc file
         The default qiskitrc location is in ``$HOME/.qiskitrc/qhprc``
         """
         config_parser = ConfigParser()
@@ -318,10 +315,11 @@ class Credentials:
         except ParsingError as ex:
             raise HoneywellCredentialsError(str(ex))
 
-        for k, v in {'user_name': self.user_name, 'api_url': _API_URL}.items():
+        for k, v in {"user_name": self.user_name, "api_url": _API_URL}.items():
             setattr(self, k, config_parser.get(SECTION_NAME, k, fallback=v))
-        setattr(self, 'proxies',
-                json.loads(config_parser.get(SECTION_NAME, 'proxies', fallback='{}')))
+        setattr(
+            self, "proxies", json.loads(config_parser.get(SECTION_NAME, "proxies", fallback="{}"))
+        )
 
     def load_config(self, filename=DEFAULT_QISKITRC_FILE):
         """ Read credential information from file """
@@ -332,7 +330,7 @@ class Credentials:
         self._save_qiskitrc(overwrite, filename)
 
     def _save_qiskitrc(self, overwrite=False, filename=DEFAULT_QISKITRC_FILE):
-        """ Stores the credentials and proxy information to qiskitrcc file
+        """Stores the credentials and proxy information to qiskitrcc file
         The default qiskitrc location is in ``$HOME/.qiskitrc/qhprc``
         """
         config_parser = ConfigParser()
@@ -343,16 +341,18 @@ class Credentials:
 
         if not config_parser.has_section(SECTION_NAME):
             config_parser[SECTION_NAME] = {}
-        for k, v in {'user_name': self.user_name,
-                     'proxies': self.proxies,
-                     'api_url': str(self.api_url)}.items():
+        for k, v in {
+            "user_name": self.user_name,
+            "proxies": self.proxies,
+            "api_url": str(self.api_url),
+        }.items():
             if k not in config_parser[SECTION_NAME] or not overwrite:
                 if isinstance(v, dict):
                     config_parser[SECTION_NAME].update({k: json.dumps(v)})
                 elif v is not None:
                     config_parser[SECTION_NAME].update({k: v})
         (Path(filename).parent).mkdir(parents=True, exist_ok=True)
-        with open(str(filename), 'w') as conf_file:
+        with open(str(filename), "w") as conf_file:
             config_parser.write(conf_file)
 
     def remove_creds(self):

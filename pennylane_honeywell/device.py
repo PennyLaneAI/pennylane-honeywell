@@ -104,7 +104,7 @@ class HQSDevice(QubitDevice):
                 "The honeywell.hqs device does not support analytic expectation values"
             )
 
-        if shots< 1 or shots> 10000:
+        if shots < 1 or shots > 10000:
             raise ValueError(
                 "Honeywell only supports shots to be between 1 and 10,000 when running a job."
             )

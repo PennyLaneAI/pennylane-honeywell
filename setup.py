@@ -24,8 +24,7 @@ with open("pennylane_honeywell/_version.py") as f:
 # Requirements should be as minimal as possible.
 # Avoid pinning, and use minimum version numbers
 # only where required.
-requirements = ["pennylane>=0.15", "requests", "pyjwt>=1.7.1,<2",
-"keyring>=10.6.0"]
+requirements = ["pennylane>=0.15", "requests", "pyjwt>=1.7.1,<2", "keyring>=10.6.0"]
 
 info = {
     # 'name' is the name that will be used by pip for installation
