@@ -1,3 +1,4 @@
 git+https://github.com/PennyLaneAI/pennylane.git@master
 requests
-jwt
+pyjwt>=1.7.1,<2
+keyring>=10.6.0
