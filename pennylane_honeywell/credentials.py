@@ -72,8 +72,6 @@ logger = logging.getLogger(__name__)
 class HoneywellCredentialsError(HoneywellError):
     """Base class for errors raised during credential management"""
 
-    pass
-
 
 class Credentials:
     """
@@ -185,10 +183,9 @@ class Credentials:
             if response.status_code != HTTPStatus.OK:
                 return response.status_code, response.json()
 
-            else:
-                print("***Successfully logged in***")
-                self._save_tokens(response.json()["id-token"], response.json()["refresh-token"])
-                return response.status_code, None
+            print("***Successfully logged in***")
+            self._save_tokens(response.json()["id-token"], response.json()["refresh-token"])
+            return response.status_code, None
 
         except requests.exceptions.RequestException as exception:
             print(exception)
