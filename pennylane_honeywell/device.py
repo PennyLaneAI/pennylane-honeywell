@@ -179,8 +179,7 @@ class HQSDevice(QubitDevice):
         """
         return set(self._operation_map.keys())
 
-    @property
-    def job_submission_header(self):
+    def get_job_submission_header(self):
         #TODO: docstring
         access_token = self.cred.access_token
         header = {
@@ -189,8 +188,7 @@ class HQSDevice(QubitDevice):
         }
         return header
 
-    @property
-    def job_retrieval_header(self):
+    def get_job_retrieval_header(self):
         #TODO: docstring
         access_token = self.cred.access_token
         header = {
@@ -203,16 +201,19 @@ class HQSDevice(QubitDevice):
         circuit_str = tape.to_openqasm()
         body = {**self.data, "program": circuit_str}
 
-        header = self.job_submission_header
+        header = self.get_job_submission_header()
         return requests.post(self.hostname, json.dumps(body), headers=header)
 
-    def _query_results(self, job_id):
+    def _query_results(self, job_data):
         #TODO: docstring
+
+        # Extract the job ID from the response
+        job_id = job_data["job"]
         job_endpoint = "/".join([self.hostname, job_id])
 
         while job_data["status"] not in self.TERMINAL_STATUSES:
             sleep(self.retry_delay)
-            header = self.job_retrieval_header
+            header = self.get_job_retrieval_header()
             response = requests.get(job_endpoint, headers=header)
             response.raise_for_status()
 
@@ -228,9 +229,7 @@ class HQSDevice(QubitDevice):
 
         job_data = response.json()
 
-        # Extract the job ID from the response
-        job_id = job_data["job"]
-        job_data = self._query_results(job_id)
+        job_data = self._query_results(job_data)
 
         if job_data["status"] == "failed":
             raise DeviceError("Job failed in remote backend.")
