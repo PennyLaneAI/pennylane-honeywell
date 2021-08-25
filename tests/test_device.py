@@ -179,15 +179,6 @@ class TestHQSDevice:
         }
         assert dev.get_job_retrieval_header() == expected
 
-    def get_job_submission_header(self):
-        #TODO: docstring
-        access_token = self.cred.access_token
-        header = {
-            "Content-Type": "application/json",
-            "Authorization": access_token,
-        }
-        return header
-
     def test_user_not_found_error(self, monkeypatch, tmpdir):
         """Tests that an error is thrown with the device is created without
         a valid API token."""
