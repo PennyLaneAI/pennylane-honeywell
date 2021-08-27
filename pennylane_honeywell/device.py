@@ -276,15 +276,10 @@ class HQSDevice(QubitDevice):
         if self._access_token is None or self.token_is_expired(self._access_token):
 
             if self._refresh_token is None or self.token_is_expired(self._refresh_token):
-                print("bent login")
-
-                # TODO: pull username from config file if exists
                 self._access_token, self._refresh_token = self._login()
                 self.save_tokens(self._access_token, refresh_token=self._refresh_token)
 
             else:
-                print("bent else")
-
                 # Refresh the access token using the refresh token
                 headers = {"Content-Type": "application/json", "refresh-token": self._refresh_token}
 
