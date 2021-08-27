@@ -23,6 +23,8 @@ import json
 import warnings
 import getpass
 import jwt
+import toml
+import datetime
 from time import sleep
 from appdirs import user_config_dir
 
@@ -33,7 +35,6 @@ import numpy as np
 import pennylane as qml
 from pennylane import QubitDevice, DeviceError
 from pennylane.operation import Sample
-from pennylane_honeywell.credentials import Credentials
 
 from ._version import __version__
 
@@ -66,8 +67,10 @@ OPENQASM_GATES = {
 
 pennylane_honeywell_dir = user_config_dir("pennylane-honeywell", "Xanadu")
 
+
 class RequestFailedError(Exception):
     """Raised when a request to the remote platform returns an error response."""
+
 
 class HQSDevice(QubitDevice):
     r"""Honeywell Quantum Services device for PennyLane.
@@ -106,7 +109,16 @@ class HQSDevice(QubitDevice):
     DEFAULT_BACKEND = "HQS-LT-1.0-APIVAL"
     API_HEADER_KEY = "x-api-key"
 
-    def __init__(self, wires, machine, shots=1000, user=None, retry_delay=2):
+    def __init__(
+        self,
+        wires,
+        machine,
+        shots=1000,
+        user_email=None,
+        access_token=None,
+        refresh_token=None,
+        retry_delay=2,
+    ):
         if shots is None:
             raise ValueError(
                 "The honeywell.hqs device does not support analytic expectation values"
@@ -122,7 +134,7 @@ class HQSDevice(QubitDevice):
         self.shots = shots
         self._retry_delay = retry_delay
 
-        self._user = user
+        self._user = user_email
         self.set_api_configs()
 
         self.data = {
@@ -131,7 +143,7 @@ class HQSDevice(QubitDevice):
             "count": self.shots,
             "options": None,
         }
-        self._access_token, self._refresh_token = self.load_tokens()
+        self._access_token, self._refresh_token = access_token, refresh_token
 
         self.reset()
 
@@ -145,16 +157,21 @@ class HQSDevice(QubitDevice):
         Set the configurations needed to connect to HQS API.
         """
         self._user = self._user or os.getenv("HQS_USER")
-        if not self._user:
-            raise ValueError("No user name for HQS platform found.")
 
-        self.cred = Credentials(user_name=self._user)
+        if not self._user:
+            # Check the PennyLane config file too
+            config = qml.default_config
+            config.safe_get(config._config, *["honeywell", "global", "user_email"])
 
         self.hostname = "/".join([self.BASE_HOSTNAME, self.TARGET_PATH])
 
     @staticmethod
     def token_is_expired(token):
-        token_expiry_time = jwt.decode(token, verify=False, algorithms=["RS256"])["exp"]
+        try:
+            token_expiry_time = jwt.decode(token, verify=False, algorithms=["RS256"])["exp"]
+        except jwt.DecodeError:
+            return True
+
         current_time = datetime.datetime.now(datetime.timezone.utc).timestamp()
         return token_expiry_time < current_time
 
@@ -162,10 +179,12 @@ class HQSDevice(QubitDevice):
     def save_tokens(access_token, refresh_token=None):
         config = qml.default_config
 
-        config['honeywell']['global']['access_token'] = access_token
+        config.safe_set(config._config, access_token, *["honeywell", "global", "access_token"])
 
         if refresh_token is not None:
-            config['honeywell']['global']['refresh_token'] = refresh_token
+            config.safe_set(
+                config._config, refresh_token, *["honeywell", "global", "refresh_token"]
+            )
 
         directory, _ = os.path.split(qml.default_config._filepath)
 
@@ -180,8 +199,8 @@ class HQSDevice(QubitDevice):
         config = qml.default_config
 
         try:
-            access_token = config['honeywell']['global']['access_token']
-            refresh_token = config['honeywell']['global']['refresh_token']
+            access_token = config["honeywell.hqs"]["global"]["access_token"]
+            refresh_token = config["honeywell.hqs"]["refresh_token"]
             return access_token, refresh_token
 
         except KeyError:
@@ -189,17 +208,18 @@ class HQSDevice(QubitDevice):
             return None, None
 
     def _login(self):
-        header = self.get_job_retrieval_header()
+
+        if not self._user:
+            raise ValueError("No username for HQS platform found when trying to login.")
 
         pwd = getpass.getpass(prompt="Enter your Honeywell account password: ")
-        body = {"email": self._user,
-                "password": pwd}
+        body = {"Content-Type": "application/json", "email": self._user, "password": pwd}
 
-        r = requests.post('https://qapi.honeywell.com/v1/login', json = header.update(body))
+        response = requests.post("https://qapi.honeywell.com/v1/login", json=body)
 
         if response.status_code == 200:
-            access_token = response.json()['id-token']
-            refresh_token = response.json()['refresh-token']
+            access_token = response.json()["id-token"]
+            refresh_token = response.json()["refresh-token"]
 
             # Delete the user credential
             pwd = None
@@ -213,21 +233,21 @@ class HQSDevice(QubitDevice):
     def _format_error_message():
         body = response.json()
         status = body.get("status_code", "")
-        code = body.get("code", ""),
-        detail = body.get("detail", ""),
-        meta = body.get("meta", ""),
+        code = (body.get("code", ""),)
+        detail = (body.get("detail", ""),)
+        meta = (body.get("meta", ""),)
         return f"{status} ({code}): {detail} ({meta})"
 
     def _refresh_access_token(self):
         # Refresh the access token using the refresh token
         body = {"refresh-token": self._refresh_token}
 
-        response= requests.post('https://qapi.honeywell.com/v1/login', json = body)
+        response = requests.post("https://qapi.honeywell.com/v1/login", json=body)
 
         # Access tokens are also called id-tokens
 
         if response.status_code == 200:
-            return response.json()['id-token']
+            return response.json()["id-token"]
 
         raise RequestFailedError(
             f"Failed to get access token: {self._format_error_message(response)}"
@@ -256,21 +276,23 @@ class HQSDevice(QubitDevice):
         if self._access_token is None or self.token_is_expired(self._access_token):
 
             if self._refresh_token is None or self.token_is_expired(self._refresh_token):
+                print("bent login")
 
                 # TODO: pull username from config file if exists
                 self._access_token, self._refresh_token = self._login()
-                save_tokens(self._access_token, refresh_token=self._refresh_token)
+                self.save_tokens(self._access_token, refresh_token=self._refresh_token)
 
             else:
+                print("bent else")
 
                 # Refresh the access token using the refresh token
                 headers = {"Content-Type": "application/json", "refresh-token": self._refresh_token}
 
-                r = requests.post('https://qapi.honeywell.com/v1/login', json = headers)
+                r = requests.post("https://qapi.honeywell.com/v1/login", json=headers)
 
                 # Access tokens are also called id-tokens
-                self._access_token = r.json()['id-token']
-                save_tokens(self._access_token)
+                self._access_token = r.json()["id-token"]
+                self.save_tokens(self._access_token)
 
         return self._access_token
 
