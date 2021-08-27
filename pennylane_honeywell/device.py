@@ -21,12 +21,16 @@ This module contains an abstract base class for constructing HQS devices for Pen
 import os
 import json
 import warnings
+import getpass
+import jwt
 from time import sleep
+from appdirs import user_config_dir
 
 import requests
 
 import numpy as np
 
+import pennylane as qml
 from pennylane import QubitDevice, DeviceError
 from pennylane.operation import Sample
 from pennylane_honeywell.credentials import Credentials
@@ -60,6 +64,10 @@ OPENQASM_GATES = {
     "PhaseShift": "u1",
 }
 
+pennylane_honeywell_dir = user_config_dir("pennylane-honeywell", "Xanadu")
+
+class RequestFailedError(Exception):
+    """Raised when a request to the remote platform returns an error response."""
 
 class HQSDevice(QubitDevice):
     r"""Honeywell Quantum Services device for PennyLane.
@@ -123,6 +131,7 @@ class HQSDevice(QubitDevice):
             "count": self.shots,
             "options": None,
         }
+        self._access_token, self._refresh_token = self.load_tokens()
 
         self.reset()
 
@@ -142,6 +151,128 @@ class HQSDevice(QubitDevice):
         self.cred = Credentials(user_name=self._user)
 
         self.hostname = "/".join([self.BASE_HOSTNAME, self.TARGET_PATH])
+
+    @staticmethod
+    def token_is_expired(token):
+        token_expiry_time = jwt.decode(token, verify=False, algorithms=["RS256"])["exp"]
+        current_time = datetime.datetime.now(datetime.timezone.utc).timestamp()
+        return token_expiry_time < current_time
+
+    @staticmethod
+    def save_tokens(access_token, refresh_token=None):
+        config = qml.default_config
+
+        config['honeywell']['global']['access_token'] = access_token
+
+        if refresh_token is not None:
+            config['honeywell']['global']['refresh_token'] = refresh_token
+
+        directory, _ = os.path.split(qml.default_config._filepath)
+
+        if not os.path.isdir(directory):
+            os.mkdir(directory)
+
+        with open(qml.default_config._filepath, "w") as f:
+            toml.dump(config._config, f)
+
+    @staticmethod
+    def load_tokens():
+        config = qml.default_config
+
+        try:
+            access_token = config['honeywell']['global']['access_token']
+            refresh_token = config['honeywell']['global']['refresh_token']
+            return access_token, refresh_token
+
+        except KeyError:
+            # There aren't any tokens from before
+            return None, None
+
+    def _login(self):
+        header = self.get_job_retrieval_header()
+
+        pwd = getpass.getpass(prompt="Enter your Honeywell account password: ")
+        body = {"email": self._user,
+                "password": pwd}
+
+        r = requests.post('https://qapi.honeywell.com/v1/login', json = header.update(body))
+
+        if response.status_code == 200:
+            access_token = response.json()['id-token']
+            refresh_token = response.json()['refresh-token']
+
+            # Delete the user credential
+            pwd = None
+            return access_token, refresh_token
+
+        raise RequestFailedError(
+            f"Failed to get access token: {self._format_error_message(response)}"
+        )
+
+    @staticmethod
+    def _format_error_message():
+        body = response.json()
+        status = body.get("status_code", "")
+        code = body.get("code", ""),
+        detail = body.get("detail", ""),
+        meta = body.get("meta", ""),
+        return f"{status} ({code}): {detail} ({meta})"
+
+    def _refresh_access_token(self):
+        # Refresh the access token using the refresh token
+        body = {"refresh-token": self._refresh_token}
+
+        response= requests.post('https://qapi.honeywell.com/v1/login', json = body)
+
+        # Access tokens are also called id-tokens
+
+        if response.status_code == 200:
+            return response.json()['id-token']
+
+        raise RequestFailedError(
+            f"Failed to get access token: {self._format_error_message(response)}"
+        )
+
+    def get_valid_access_token(self):
+        """Return an access token.
+
+        This method will first try to use any stored tokens (access or refresh
+        token) and otherwise ask for user credentials.
+
+        1. Check the access token:
+            i) if doesn't exist or it expired then check the refresh token
+            ii) otherwise: use it
+
+        2. Check the refresh token:
+            i) if doesn't exist or it expired then ask user for credentials;
+            ii) otherwise: request a new access token using the refresh token
+
+        3. Request a new access token and refresh token using the user
+        credentials
+
+        Returns:
+            str: access token to use for sending requests
+        """
+        if self._access_token is None or self.token_is_expired(self._access_token):
+
+            if self._refresh_token is None or self.token_is_expired(self._refresh_token):
+
+                # TODO: pull username from config file if exists
+                self._access_token, self._refresh_token = self._login()
+                save_tokens(self._access_token, refresh_token=self._refresh_token)
+
+            else:
+
+                # Refresh the access token using the refresh token
+                headers = {"Content-Type": "application/json", "refresh-token": self._refresh_token}
+
+                r = requests.post('https://qapi.honeywell.com/v1/login', json = headers)
+
+                # Access tokens are also called id-tokens
+                self._access_token = r.json()['id-token']
+                save_tokens(self._access_token)
+
+        return self._access_token
 
     @property
     def retry_delay(self):
@@ -185,7 +316,7 @@ class HQSDevice(QubitDevice):
         Returns:
             dict: the header required for job submission
         """
-        access_token = self.cred.access_token
+        access_token = self.get_valid_access_token()
         header = {
             "Content-Type": "application/json",
             "Authorization": access_token,
@@ -198,7 +329,7 @@ class HQSDevice(QubitDevice):
         Returns:
             dict: the header required for job retrieval
         """
-        access_token = self.cred.access_token
+        access_token = self.get_valid_access_token()
         header = {
             "Authorization": access_token,
         }
@@ -245,7 +376,6 @@ class HQSDevice(QubitDevice):
 
         self.check_validity(tape.operations, tape.observables)
         response = self._submit_circuit(tape)
-
         response.raise_for_status()
 
         job_data = response.json()
