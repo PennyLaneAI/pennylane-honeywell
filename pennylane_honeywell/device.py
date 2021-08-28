@@ -167,9 +167,20 @@ class HQSDevice(QubitDevice):
 
     @staticmethod
     def token_is_expired(token):
+        """Check whether a given token is expired.
+
+        Args:
+            token (str): A token to check, could be an access token or a
+                refresh token. The token is decode using JWT to check for its
+                expiration.
+
+        Returns:
+            bool: whether the token is expired or not
+        """
         try:
             token_expiry_time = jwt.decode(token, verify=False, algorithms=["RS256"])["exp"]
         except jwt.DecodeError:
+            # Some error happened: the token is invalid
             return True
 
         current_time = datetime.datetime.now(datetime.timezone.utc).timestamp()
@@ -177,6 +188,12 @@ class HQSDevice(QubitDevice):
 
     @staticmethod
     def save_tokens(access_token, refresh_token=None):
+        """Save the tokens provided to the PennyLane configuration file.
+
+        Args:
+            access_token (str): access token to save
+            refresh_token (str): refresh token to save (if any)
+        """
         config = qml.default_config
 
         config.safe_set(config._config, access_token, *["honeywell", "global", "access_token"])
@@ -193,19 +210,6 @@ class HQSDevice(QubitDevice):
 
         with open(qml.default_config._filepath, "w") as f:
             toml.dump(config._config, f)
-
-    @staticmethod
-    def load_tokens():
-        config = qml.default_config
-
-        try:
-            access_token = config["honeywell.hqs"]["global"]["access_token"]
-            refresh_token = config["honeywell.hqs"]["refresh_token"]
-            return access_token, refresh_token
-
-        except KeyError:
-            # There aren't any tokens from before
-            return None, None
 
     def _login(self):
 

@@ -17,6 +17,8 @@ import pytest
 import appdirs
 import requests
 import json
+import datetime
+import jwt
 
 import pennylane as qml
 import numpy as np
@@ -295,6 +297,16 @@ class TestHQSDevice:
         )  # force loading of config
         with pytest.raises(ValueError, match="No username for HQS platform found"):
             HQSDevice(2, machine=DUMMY_MACHINE)._login()
+
+    now = datetime.datetime.now()
+
+    @pytest.mark.parametrize("token, expired", [(0,True), (now.replace(now.year + 1), False)])
+    def test_token_is_expired(self, token, expired):
+        """Tests that the token_is_expired method results in expected
+        values."""
+        token = jwt.encode({"exp": token}, "secret")
+
+        assert HQSDevice(2, machine=DUMMY_MACHINE).token_is_expired(token) is expired
 
     @pytest.mark.parametrize(
         "results, indices",
