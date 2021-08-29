@@ -71,6 +71,8 @@ pennylane_honeywell_dir = user_config_dir("pennylane-honeywell", "Xanadu")
 class RequestFailedError(Exception):
     """Raised when a request to the remote platform returns an error response."""
 
+class InvalidJWTError(Exception):
+    """Raised when the returned JWT token was invalid."""
 
 class HQSDevice(QubitDevice):
     r"""Honeywell Quantum Services device for PennyLane.
@@ -179,9 +181,9 @@ class HQSDevice(QubitDevice):
         """
         try:
             token_expiry_time = jwt.decode(token, verify=False, algorithms=["RS256"])["exp"]
-        except jwt.DecodeError:
+        except jwt.DecodeError as e:
             # Some error happened: the token is invalid
-            return True
+            raise InvalidJWTError("Invalid JWT token received.") from e
 
         current_time = datetime.datetime.now(datetime.timezone.utc).timestamp()
         return token_expiry_time < current_time

@@ -24,7 +24,7 @@ import pennylane as qml
 import numpy as np
 
 import pennylane_honeywell
-from pennylane_honeywell.device import HQSDevice
+from pennylane_honeywell.device import HQSDevice, InvalidJWTError
 from pennylane_honeywell import __version__
 
 API_HEADER_KEY = "x-api-key"
@@ -307,6 +307,12 @@ class TestHQSDevice:
         token = jwt.encode({"exp": token}, "secret")
 
         assert HQSDevice(2, machine=DUMMY_MACHINE).token_is_expired(token) is expired
+
+    def test_token_is_expired_raises(self):
+        """Tests that the token_is_expired method raises an error for invalid
+        JWT token."""
+        with pytest.raises(InvalidJWTError, match="Invalid JWT token"):
+            HQSDevice(2, machine=DUMMY_MACHINE).token_is_expired(Exception)
 
     @pytest.mark.parametrize(
         "results, indices",
