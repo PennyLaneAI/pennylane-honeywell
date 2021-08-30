@@ -18,22 +18,20 @@ Honeywell Quantum Solutions device class
 This module contains an abstract base class for constructing HQS devices for PennyLane.
 
 """
-import os
-import json
-import warnings
-import getpass
-import jwt
-import toml
 import datetime
+import getpass
+import json
+import os
+import warnings
 from time import sleep
-from appdirs import user_config_dir
 
-import requests
-
+import jwt
 import numpy as np
-
 import pennylane as qml
-from pennylane import QubitDevice, DeviceError
+import requests
+import toml
+from appdirs import user_config_dir
+from pennylane import DeviceError, QubitDevice
 from pennylane.operation import Sample
 
 from ._version import __version__
@@ -64,8 +62,6 @@ OPENQASM_GATES = {
     "CSWAP": "cswap",
     "PhaseShift": "u1",
 }
-
-pennylane_honeywell_dir = user_config_dir("pennylane-honeywell", "Xanadu")
 
 
 class RequestFailedError(Exception):
@@ -191,9 +187,9 @@ class HQSDevice(QubitDevice):
         """
         try:
             token_expiry_time = jwt.decode(token, verify=False, algorithms=["RS256"])["exp"]
-        except jwt.DecodeError as e:
+        except jwt.DecodeError:
             # Some error happened: the token is invalid
-            raise InvalidJWTError("Invalid JWT token received.") from e
+            raise InvalidJWTError("Invalid JWT token received.")
 
         current_time = datetime.datetime.now(datetime.timezone.utc).timestamp()
         return token_expiry_time < current_time
@@ -216,6 +212,10 @@ class HQSDevice(QubitDevice):
             )
 
         directory, _ = os.path.split(qml.default_config._filepath)
+
+        if not directory:
+            directory = config._user_config_dir
+            config._filepath = os.path.join(directory, config._name)
 
         if not os.path.isdir(directory):
             os.mkdir(directory)

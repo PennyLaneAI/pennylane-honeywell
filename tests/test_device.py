@@ -493,6 +493,38 @@ class TestHQSDevice:
         if len(tokens) > 1:
             assert configuration_file["honeywell"]["global"]["refresh_token"] == tokens[1]
 
+    @pytest.mark.parametrize("tokens", [[12345], [12345, 5432123]])
+    @pytest.mark.parametrize("new_dir", [True, False])
+    def test_save_tokens_no_config_found(self, monkeypatch, tmpdir, tokens, new_dir):
+        """Tests that the save_tokens method correctly defaults to the user
+        config directory when no configuration file exists."""
+        config_file_name = "config.toml"
+        mock_config = qml.Configuration(config_file_name)
+        if new_dir:
+            # Case when the target directory doesn't exist
+            directory = tmpdir.join("new_dir")
+        else:
+            directory = tmpdir
+
+        filepath = directory.join(config_file_name)
+        mock_config._user_config_dir = directory
+
+        # Only the filename is in the filepath: just like when no config file
+        # was found
+        mock_config._filepath = config_file_name
+
+        monkeypatch.setattr(qml, "default_config", mock_config)
+
+        HQSDevice(2, machine=DUMMY_MACHINE).save_tokens(*tokens)
+
+        with open(filepath) as f:
+            configuration_file = toml.load(f)
+
+        assert configuration_file["honeywell"]["global"]["access_token"] == tokens[0]
+
+        if len(tokens) > 1:
+            assert configuration_file["honeywell"]["global"]["refresh_token"] == tokens[1]
+
     @pytest.mark.parametrize(
         "results, indices",
         [
