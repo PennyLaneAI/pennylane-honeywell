@@ -873,3 +873,16 @@ class TestHQSDeviceIntegration:
             dev = qml.device(
                 "honeywell.hqs", wires=2, machine=None, user_email="someuser", shots=shots
             )
+
+    @pytest.mark.skip(reason="no credentials are being specified for testing here")
+    def test_connect(self):
+        """Test running a circuit by connecting to HQS."""
+        email = "<Enter email here>"
+        dev = qml.device('honeywell.hqs', user_email=email, machine="HQS-LT-S1-APIVAL", wires=2)
+
+        @qml.qnode(dev)
+        def circuit():
+            qml.RY(0.3, wires=0)
+            return qml.expval(qml.PauliZ(0))
+
+        assert circuit() == 1
