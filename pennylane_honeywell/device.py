@@ -224,8 +224,9 @@ class HQSDevice(QubitDevice):
         response = requests.post("https://qapi.honeywell.com/v1/login", json=body)
 
         if response.status_code == 200:
-            access_token = response.json()["id-token"]
-            refresh_token = response.json()["refresh-token"]
+            response_json = response.json()
+            access_token = response_json["id-token"]
+            refresh_token = response_json["refresh-token"]
 
             # Delete the user credential
             pwd = None
@@ -236,7 +237,7 @@ class HQSDevice(QubitDevice):
         )
 
     @staticmethod
-    def _format_error_message():
+    def _format_error_message(response):
         body = response.json()
         status = body.get("status_code", "")
         code = (body.get("code", ""),)
@@ -245,6 +246,8 @@ class HQSDevice(QubitDevice):
         return f"{status} ({code}): {detail} ({meta})"
 
     def _refresh_access_token(self):
+        """Sends a request to refresh the access token using the stored refresh
+        token."""
         # Refresh the access token using the refresh token
         body = {"refresh-token": self._refresh_token}
 
@@ -290,6 +293,11 @@ class HQSDevice(QubitDevice):
                 headers = {"Content-Type": "application/json", "refresh-token": self._refresh_token}
 
                 r = requests.post("https://qapi.honeywell.com/v1/login", json=headers)
+
+                if r.status_code != 200:
+                    raise RequestFailedError(
+                        f"Failed to get access token: {self._format_error_message(r)}"
+                    )
 
                 # Access tokens are also called id-tokens
                 self._access_token = r.json()["id-token"]

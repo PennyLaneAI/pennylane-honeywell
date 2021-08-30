@@ -19,12 +19,14 @@ import requests
 import json
 import datetime
 import jwt
+import toml
+import getpass
 
 import pennylane as qml
 import numpy as np
 
 import pennylane_honeywell
-from pennylane_honeywell.device import HQSDevice, InvalidJWTError
+from pennylane_honeywell.device import HQSDevice, InvalidJWTError, RequestFailedError
 from pennylane_honeywell import __version__
 
 API_HEADER_KEY = "x-api-key"
@@ -106,6 +108,37 @@ class MockResponse:
     def raise_for_status(self):
         pass
 
+MOCK_ACCESS_TOKEN = "123456789"
+MOCK_REFRESH_TOKEN = "11111111"
+
+class MockResponseWithTokens:
+    def __init__(self, num_calls=0):
+        self.status_code = 200
+        self.mock_post_response = {
+            "id-token": MOCK_ACCESS_TOKEN,
+            "refresh-token": MOCK_REFRESH_TOKEN,
+        }
+        self.num_calls = num_calls
+
+    def json(self):
+        return self.mock_post_response
+
+class MockResponseUnsuccessfulRequest:
+
+    def __init__(self):
+
+        self.status_code = "Not 200"
+        self.mock_post_response = {
+            "status_code": "Not 200",
+            "code" :"Not 200",
+            "detail" : "Mock error for login.",
+            "meta" : "Something went wrong."
+        }
+
+    def json(self):
+        return self.mock_post_response
+
+now = datetime.datetime.now()
 
 class TestHQSDevice:
     """Tests for the HQSDevice base class."""
@@ -236,6 +269,121 @@ class TestHQSDevice:
         assert body == json.dumps(expected_body)
         assert headers == expected_header
 
+    def test_login(self, monkeypatch):
+        """Tests that an access token and a refresh token are returned if the
+        _login method was successful."""
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=SOME_API_KEY)
+
+        mock_response = MockResponseWithTokens()
+        monkeypatch.setattr(requests, "post", lambda *args, **kwargs: mock_response)
+        monkeypatch.setattr(getpass, "getpass", lambda *args, **kwargs: None)
+
+        access_token, refresh_token = dev._login()
+        assert access_token == MOCK_ACCESS_TOKEN
+        assert refresh_token == MOCK_REFRESH_TOKEN
+
+    def test_login_raises(self, monkeypatch):
+        """Tests that an error is raised if the _login method was
+        unsuccessful."""
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=SOME_API_KEY)
+
+        mock_response = MockResponseUnsuccessfulRequest()
+        monkeypatch.setattr(requests, "post", lambda *args, **kwargs: mock_response)
+        monkeypatch.setattr(getpass, "getpass", lambda *args, **kwargs: None)
+
+        with pytest.raises(RequestFailedError, match="Failed to get access token"):
+            dev._login()
+
+    def test_refresh_access_token(self, monkeypatch):
+        """Tests that _refresh_access_token returns an access token for a
+        successful request."""
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=SOME_API_KEY)
+
+        mock_response = MockResponseWithTokens()
+        monkeypatch.setattr(requests, "post", lambda *args, **kwargs: mock_response)
+
+        access_token = dev._refresh_access_token()
+        assert access_token == MOCK_ACCESS_TOKEN
+
+    def test_refresh_access_token_raises(self, monkeypatch):
+        """Tests that _refresh_access_token raises an error for a
+        unsuccessful request."""
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=SOME_API_KEY)
+
+        mock_response = MockResponseUnsuccessfulRequest()
+        monkeypatch.setattr(requests, "post", lambda *args, **kwargs: mock_response)
+
+        with pytest.raises(RequestFailedError, match="Failed to get access token"):
+            dev._refresh_access_token()
+
+    def test_get_valid_access_token_use_stored(self):
+        """Test that the get_valid_access_token uses a stored token if it
+        exists and it's not expired."""
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=SOME_API_KEY)
+        valid_time = now.replace(now.year + 1)
+        token = jwt.encode({"exp": valid_time}, "secret")
+        dev._access_token = token
+        assert dev.get_valid_access_token() == token
+
+    @pytest.mark.parametrize("access_token_expiry", [0, None])
+    @pytest.mark.parametrize("refresh_token_expiry", [0, None])
+    def test_get_valid_access_token_new_tokens(self, access_token_expiry, refresh_token_expiry, monkeypatch):
+        """Test that the get_valid_access_token returns a new access and
+        refresh tokens by logging in."""
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=SOME_API_KEY)
+
+        if access_token_expiry:
+            # Set the token to an outdated token
+            dev._access_token = jwt.encode({"exp": access_token_expiry}, "secret")
+
+        if refresh_token_expiry:
+            # Set the token to an outdated token
+            dev._refresh_token = jwt.encode({"exp": refresh_token_expiry}, "secret")
+
+        some_token = 1234567
+        some_refresh_token = 111111
+        monkeypatch.setattr(dev, "_login", lambda *args, **kwargs: (some_token, some_refresh_token))
+        monkeypatch.setattr(dev, "save_tokens", lambda *args, **kwargs: None)
+        assert dev.get_valid_access_token() == some_token
+        assert dev._refresh_token == some_refresh_token
+
+    @pytest.mark.parametrize("access_token_expiry", [0, None])
+    def test_get_valid_access_token_using_refresh_token(self, access_token_expiry, monkeypatch):
+        """Test that the get_valid_access_token returns a new access token by
+        refreshing using the refresh token."""
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=SOME_API_KEY)
+
+        if access_token_expiry:
+            # Set the token to an outdated token
+            dev._access_token = jwt.encode({"exp": access_token_expiry}, "secret")
+
+        # Set a refresh token with an expiry date in the future
+        dev._refresh_token = jwt.encode({"exp": now.replace(now.year + 1)}, "secret")
+        mock_response = MockResponseWithTokens()
+        monkeypatch.setattr(requests, "post", lambda *args, **kwargs: mock_response)
+        monkeypatch.setattr(dev, "save_tokens", lambda *args, **kwargs: None)
+
+        assert dev.get_valid_access_token() == MOCK_ACCESS_TOKEN
+
+    @pytest.mark.parametrize("access_token_expiry", [0, None])
+    def test_get_valid_access_token_using_refresh_token_raises(self, access_token_expiry, monkeypatch):
+        """Test that the get_valid_access_token returns a new access token by
+        refreshing using the refresh token."""
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=SOME_API_KEY)
+
+        if access_token_expiry:
+            # Set the token to an outdated token
+            dev._access_token = jwt.encode({"exp": access_token_expiry}, "secret")
+
+        # Set a refresh token with an expiry date in the future
+        dev._refresh_token = jwt.encode({"exp": now.replace(now.year + 1)}, "secret")
+        mock_response = MockResponseUnsuccessfulRequest()
+        monkeypatch.setattr(requests, "post", lambda *args, **kwargs: mock_response)
+        monkeypatch.setattr(dev, "save_tokens", lambda *args, **kwargs: None)
+
+        with pytest.raises(RequestFailedError, match="Failed to get access token"):
+            dev.get_valid_access_token()
+
     def test_query_results(self, monkeypatch):
         """Tests that the ``_query_results`` method sends a request adhering to
         the Honeywell API specs."""
@@ -298,8 +446,6 @@ class TestHQSDevice:
         with pytest.raises(ValueError, match="No username for HQS platform found"):
             HQSDevice(2, machine=DUMMY_MACHINE)._login()
 
-    now = datetime.datetime.now()
-
     @pytest.mark.parametrize("token, expired", [(0,True), (now.replace(now.year + 1), False)])
     def test_token_is_expired(self, token, expired):
         """Tests that the token_is_expired method results in expected
@@ -313,6 +459,31 @@ class TestHQSDevice:
         JWT token."""
         with pytest.raises(InvalidJWTError, match="Invalid JWT token"):
             HQSDevice(2, machine=DUMMY_MACHINE).token_is_expired(Exception)
+
+    @pytest.mark.parametrize("tokens", [[12345], [12345, 5432123]])
+    @pytest.mark.parametrize("new_dir", [True, False])
+    def test_save_tokens(self, monkeypatch, tmpdir, tokens, new_dir):
+        """Tests that the save_tokens method correctly saves to the PennyLane
+        configuration file."""
+        mock_config = qml.Configuration("config.toml")
+
+        if new_dir:
+            # Case when the target directory doesn't exist
+            filepath = tmpdir.join("new_dir").join("config.toml")
+        else:
+            filepath = tmpdir.join("config.toml")
+        mock_config._filepath = filepath
+
+        monkeypatch.setattr(qml, "default_config", mock_config)
+        HQSDevice(2, machine=DUMMY_MACHINE).save_tokens(*tokens)
+
+        with open(filepath) as f:
+            configuration_file = toml.load(f)
+
+        assert configuration_file["honeywell"]["global"]["access_token"] == tokens[0]
+
+        if len(tokens) > 1:
+            assert configuration_file["honeywell"]["global"]["refresh_token"] == tokens[1]
 
     @pytest.mark.parametrize(
         "results, indices",
@@ -337,7 +508,6 @@ class TestHQSDevice:
         expected_array = np.stack([np.ravel(indices)] * 10)
         assert res.shape == (dev.shots, dev.num_wires)
         assert np.all(res == expected_array)
-
 
 class TestHQSDeviceIntegration:
     """Integration tests of HQSDevice base class with PennyLane"""
