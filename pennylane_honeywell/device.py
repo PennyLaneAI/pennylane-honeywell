@@ -89,6 +89,13 @@ class HQSDevice(QubitDevice):
         user_email (str): The user email used to authenticate to HQS. If not
             provided, the environment variable ``HQS_USER`` or the ``user_email``
             information from the PennyLane configuration file is used.
+        access_token (str): The access token to use when authenticating to HQS.
+            Note: an access token may have been saved to the config file
+            automatically by the ``save_tokens`` method.
+        refresh_token (str): The refresh token to use for obtaining a new
+            access token when authenticating to HQS. Note: this argument may be parsed
+            from the PennyLane configuration file. A refresh token may have
+            been saved to the config file automatically by the ``save_tokens`` method.
         retry_delay (float): The time (in seconds) to wait between requests
             to the remote server when checking for completion of circuit
             execution.
