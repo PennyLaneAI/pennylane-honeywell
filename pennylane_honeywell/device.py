@@ -1,4 +1,4 @@
-# Copyright 2020 Xanadu Quantum Technologies Inc.
+# Copyright 2020-2021 Xanadu Quantum Technologies Inc.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -86,8 +86,9 @@ class HQSDevice(QubitDevice):
         machine (str): name of the Honeywell machine to execute on
         shots (int): number of circuit evaluations/random samples used
             to estimate expectation values of observables
-        user (str): The HQS API key. If not provided, the environment
-            variable ``HQS_TOKEN`` is used.
+        user_email (str): The user email used to authenticate to HQS. If not
+            provided, the environment variable ``HQS_USER`` or the ``user_email``
+            information from the PennyLane configuration file is used.
         retry_delay (float): The time (in seconds) to wait between requests
             to the remote server when checking for completion of circuit
             execution.
