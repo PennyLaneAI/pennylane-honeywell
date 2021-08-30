@@ -183,8 +183,8 @@ class HQSDevice(QubitDevice):
 
         Args:
             token (str): A token to check, could be an access token or a
-                refresh token. The token is decode using JWT to check for its
-                expiration.
+                refresh token. The token is decoded using JWT to check its
+                expiry date.
 
         Returns:
             bool: whether the token is expired or not
@@ -200,7 +200,7 @@ class HQSDevice(QubitDevice):
 
     @staticmethod
     def save_tokens(access_token, refresh_token=None):
-        """Save the tokens provided to the PennyLane configuration file.
+        """Save tokens to the PennyLane configuration file.
 
         Args:
             access_token (str): access token to save
@@ -224,6 +224,15 @@ class HQSDevice(QubitDevice):
             toml.dump(config._config, f)
 
     def _login(self):
+        """Login to the HQS service to obtain an access token and a refresh token.
+
+        Returns:
+            tuple: a valid access token and a refresh token
+
+        Raises:
+            ValueError: if no username was provided
+            RequestFailedError: if the request failed
+        """
 
         if not self._user:
             raise ValueError("No username for HQS platform found when trying to login.")
@@ -248,6 +257,14 @@ class HQSDevice(QubitDevice):
 
     @staticmethod
     def _format_error_message(response):
+        """Formats an error message of an HTTP response.
+
+        Args:
+            response: the HTTP response to format
+
+        Returns:
+            str: a formatted version of the response
+        """
         body = response.json()
         status = body.get("status_code", "")
         code = (body.get("code", ""),)
@@ -257,7 +274,14 @@ class HQSDevice(QubitDevice):
 
     def _refresh_access_token(self):
         """Sends a request to refresh the access token using the stored refresh
-        token."""
+        token.
+
+        Returns:
+            str: a valid access token
+
+        Raises:
+            RequestFailedError: if the request failed
+        """
         # Refresh the access token using the refresh token
         body = {"refresh-token": self._refresh_token}
 
@@ -291,6 +315,9 @@ class HQSDevice(QubitDevice):
 
         Returns:
             str: access token to use for sending requests
+
+        Raises:
+            RequestFailedError: if the request failed
         """
         if self._access_token is None or self.token_is_expired(self._access_token):
 
