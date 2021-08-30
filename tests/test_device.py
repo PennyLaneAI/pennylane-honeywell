@@ -108,8 +108,10 @@ class MockResponse:
     def raise_for_status(self):
         pass
 
+
 MOCK_ACCESS_TOKEN = "123456789"
 MOCK_REFRESH_TOKEN = "11111111"
+
 
 class MockResponseWithTokens:
     def __init__(self, num_calls=0):
@@ -123,22 +125,24 @@ class MockResponseWithTokens:
     def json(self):
         return self.mock_post_response
 
-class MockResponseUnsuccessfulRequest:
 
+class MockResponseUnsuccessfulRequest:
     def __init__(self):
 
         self.status_code = "Not 200"
         self.mock_post_response = {
             "status_code": "Not 200",
-            "code" :"Not 200",
-            "detail" : "Mock error for login.",
-            "meta" : "Something went wrong."
+            "code": "Not 200",
+            "detail": "Mock error for login.",
+            "meta": "Something went wrong.",
         }
 
     def json(self):
         return self.mock_post_response
 
+
 now = datetime.datetime.now()
+
 
 class TestHQSDevice:
     """Tests for the HQSDevice base class."""
@@ -327,7 +331,9 @@ class TestHQSDevice:
 
     @pytest.mark.parametrize("access_token_expiry", [0, None])
     @pytest.mark.parametrize("refresh_token_expiry", [0, None])
-    def test_get_valid_access_token_new_tokens(self, access_token_expiry, refresh_token_expiry, monkeypatch):
+    def test_get_valid_access_token_new_tokens(
+        self, access_token_expiry, refresh_token_expiry, monkeypatch
+    ):
         """Test that the get_valid_access_token returns a new access and
         refresh tokens by logging in."""
         dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=SOME_API_KEY)
@@ -366,7 +372,9 @@ class TestHQSDevice:
         assert dev.get_valid_access_token() == MOCK_ACCESS_TOKEN
 
     @pytest.mark.parametrize("access_token_expiry", [0, None])
-    def test_get_valid_access_token_using_refresh_token_raises(self, access_token_expiry, monkeypatch):
+    def test_get_valid_access_token_using_refresh_token_raises(
+        self, access_token_expiry, monkeypatch
+    ):
         """Test that the get_valid_access_token returns a new access token by
         refreshing using the refresh token."""
         dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=SOME_API_KEY)
@@ -446,7 +454,7 @@ class TestHQSDevice:
         with pytest.raises(ValueError, match="No username for HQS platform found"):
             HQSDevice(2, machine=DUMMY_MACHINE)._login()
 
-    @pytest.mark.parametrize("token, expired", [(0,True), (now.replace(now.year + 1), False)])
+    @pytest.mark.parametrize("token, expired", [(0, True), (now.replace(now.year + 1), False)])
     def test_token_is_expired(self, token, expired):
         """Tests that the token_is_expired method results in expected
         values."""
@@ -508,6 +516,7 @@ class TestHQSDevice:
         expected_array = np.stack([np.ravel(indices)] * 10)
         assert res.shape == (dev.shots, dev.num_wires)
         assert np.all(res == expected_array)
+
 
 class TestHQSDeviceIntegration:
     """Integration tests of HQSDevice base class with PennyLane"""

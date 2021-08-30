@@ -71,8 +71,10 @@ pennylane_honeywell_dir = user_config_dir("pennylane-honeywell", "Xanadu")
 class RequestFailedError(Exception):
     """Raised when a request to the remote platform returns an error response."""
 
+
 class InvalidJWTError(Exception):
     """Raised when the returned JWT token was invalid."""
+
 
 class HQSDevice(QubitDevice):
     r"""Honeywell Quantum Services device for PennyLane.
