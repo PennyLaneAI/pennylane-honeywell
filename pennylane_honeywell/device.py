@@ -419,7 +419,7 @@ class HQSDevice(QubitDevice):
         return requests.post(self.hostname, json.dumps(body), headers=header)
 
     def _query_results(self, job_data):
-        """Queries the results for a specific job.
+        """Queries the results of a specific job.
 
         Args:
             job_data (str): the response obtained after submitting a job
