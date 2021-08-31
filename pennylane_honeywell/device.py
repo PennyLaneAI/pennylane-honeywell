@@ -304,7 +304,7 @@ class HQSDevice(QubitDevice):
         if response.status_code == 200:
             return response.json()["id-token"]
 
-        elif response.status_code in (400, 403):
+        if response.status_code in (400, 403):
             raise ExpiredRefreshTokenError("Invalid refresh token was used.")
 
         raise RequestFailedError(
@@ -340,7 +340,7 @@ class HQSDevice(QubitDevice):
                     self._access_token = self._refresh_access_token()
                     self.save_tokens(self._access_token)
                 except ExpiredRefreshTokenError:
-                    self._refresh_token is None
+                    self._refresh_token = None
 
             if self._refresh_token is None:
                 self._access_token, self._refresh_token = self._login()
