@@ -187,7 +187,9 @@ class HQSDevice(QubitDevice):
             bool: whether the token is expired or not
         """
         try:
-            token_expiry_time = jwt.decode(token, options={"verify_signature": False}, algorithms=["RS256"])["exp"]
+            token_expiry_time = jwt.decode(
+                token, options={"verify_signature": False}, algorithms=["RS256"]
+            )["exp"]
         except jwt.DecodeError:
             # Some error happened: the token is invalid
             raise InvalidJWTError("Invalid JWT token received.")
