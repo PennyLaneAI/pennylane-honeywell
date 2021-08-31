@@ -249,7 +249,7 @@ class HQSDevice(QubitDevice):
             refresh_token = response_json["refresh-token"]
 
             # Delete the user credential
-            pwd = None
+            del pwd
             return access_token, refresh_token
 
         raise RequestFailedError(
