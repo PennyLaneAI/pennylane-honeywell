@@ -151,7 +151,8 @@ class HQSDevice(QubitDevice):
             "count": self.shots,
             "options": None,
         }
-        self._access_token, self._refresh_token = access_token, refresh_token
+        self._access_token = access_token
+        self._refresh_token = refresh_token
 
         self.reset()
 
