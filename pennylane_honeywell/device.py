@@ -71,9 +71,11 @@ class RequestFailedError(Exception):
 class InvalidJWTError(Exception):
     """Raised when the returned JWT token is invalid."""
 
+
 class ExpiredRefreshTokenError(Exception):
     """Raised when a refresh token used to get a new access token is
     expired."""
+
 
 class HQSDevice(QubitDevice):
     r"""Honeywell Quantum Services device for PennyLane.
@@ -273,12 +275,14 @@ class HQSDevice(QubitDevice):
         """
         request_code = getattr(response, "status_code", "")
         reason = getattr(response, "reason", "")
-        response_text = getattr(response, "text", '{}')
+        response_text = getattr(response, "text", "{}")
         text = json.loads(response_text)
         error_code = text.get("error", {}).get("code", "")
         error_reason = text.get("error", {}).get("text", "")
-        return f"Request {reason} with code {request_code}. \n"\
-               f"Error code {error_code} with reason: {error_reason}"
+        return (
+            f"Request {reason} with code {request_code}. \n"
+            f"Error code {error_code} with reason: {error_reason}"
+        )
 
     def _refresh_access_token(self):
         """Sends a request to refresh the access token using the stored refresh

@@ -26,7 +26,12 @@ import pennylane as qml
 import numpy as np
 
 import pennylane_honeywell
-from pennylane_honeywell.device import HQSDevice, InvalidJWTError, RequestFailedError, ExpiredRefreshTokenError
+from pennylane_honeywell.device import (
+    HQSDevice,
+    InvalidJWTError,
+    RequestFailedError,
+    ExpiredRefreshTokenError,
+)
 from pennylane_honeywell import __version__
 
 API_HEADER_KEY = "x-api-key"
@@ -139,6 +144,7 @@ class MockResponseUnsuccessfulRequest:
 
     def json(self):
         return self.mock_post_response
+
 
 now = datetime.datetime.now()
 
@@ -903,7 +909,7 @@ class TestHQSDeviceIntegration:
     def test_connect(self):
         """Test running a circuit by connecting to HQS."""
         email = "<Enter email here>"
-        dev = qml.device('honeywell.hqs', user_email=email, machine="HQS-LT-S1-APIVAL", wires=2)
+        dev = qml.device("honeywell.hqs", user_email=email, machine="HQS-LT-S1-APIVAL", wires=2)
 
         @qml.qnode(dev)
         def circuit():
