@@ -423,6 +423,29 @@ class TestHQSDevice:
         with pytest.raises(RequestFailedError, match="Failed to get access token"):
             dev.get_valid_access_token()
 
+    def test_get_valid_access_token_new_refresh_token(
+        self, monkeypatch
+    ):
+        """Test that the get_valid_access_token manages to get a new refresh
+        token, if an expired refresh token is being used."""
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=DUMMY_EMAIL)
+        dev._access_token = None
+        dev._refresh_token = "not None"
+        mock_response = MockResponse()
+        monkeypatch.setattr(requests, "post", lambda *args, **kwargs: mock_response)
+        monkeypatch.setattr(dev, "save_tokens", lambda *args, **kwargs: None)
+
+        def f(*args, **kwargs):
+            raise ExpiredRefreshTokenError
+
+        monkeypatch.setattr(dev, "_refresh_access_token", f)
+
+        some_token = 1234567
+        some_refresh_token = 111111
+        monkeypatch.setattr(dev, "_login", lambda *args, **kwargs: (some_token, some_refresh_token))
+
+        assert dev.get_valid_access_token() == some_token
+
     def test_query_results(self, monkeypatch):
         """Tests that the ``_query_results`` method sends a request adhering to
         the Honeywell API specs."""
