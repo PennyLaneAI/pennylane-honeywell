@@ -28,7 +28,6 @@ PennyLane-Honeywell provides Honeywell Quantum Solutions hardware devices for Pe
 Remote backend access
 =====================
 
-
 The user will need to obtain access credentials for the Honeywell Quantum
 Solutions platform in order to use these remote devices.
 These credentials should be provided to PennyLane via a `configuration file,
