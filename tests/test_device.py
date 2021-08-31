@@ -423,9 +423,7 @@ class TestHQSDevice:
         with pytest.raises(RequestFailedError, match="Failed to get access token"):
             dev.get_valid_access_token()
 
-    def test_get_valid_access_token_new_refresh_token(
-        self, monkeypatch
-    ):
+    def test_get_valid_access_token_new_refresh_token(self, monkeypatch):
         """Test that the get_valid_access_token manages to get a new refresh
         token, if an expired refresh token is being used."""
         dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=DUMMY_EMAIL)
