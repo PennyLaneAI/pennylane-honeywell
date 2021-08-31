@@ -69,7 +69,7 @@ class RequestFailedError(Exception):
 
 
 class InvalidJWTError(Exception):
-    """Raised when the returned JWT token was invalid."""
+    """Raised when the returned JWT token is invalid."""
 
 
 class HQSDevice(QubitDevice):
