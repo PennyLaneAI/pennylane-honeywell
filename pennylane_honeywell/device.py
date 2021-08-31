@@ -30,7 +30,6 @@ import numpy as np
 import pennylane as qml
 import requests
 import toml
-from appdirs import user_config_dir
 from pennylane import DeviceError, QubitDevice
 from pennylane.operation import Sample
 
@@ -228,8 +227,8 @@ class HQSDevice(QubitDevice):
         if not os.path.isdir(directory):
             os.mkdir(directory)
 
-        with open(qml.default_config._filepath, "w") as f:
-            toml.dump(config._config, f)
+        with open(qml.default_config._filepath, "w") as file_to_write:
+            toml.dump(config._config, file_to_write)
 
     def _login(self):
         """Login to the HQS service to obtain an access token and a refresh token.
