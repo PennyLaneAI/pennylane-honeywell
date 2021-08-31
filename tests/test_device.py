@@ -34,7 +34,7 @@ BASE_HOSTNAME = "https://qapi.honeywell.com/v1"
 
 DUMMY_MACHINE = "SOME_MACHINE_NAME"
 
-SOME_API_KEY = "ABC123"
+DUMMY_EMAIL = "ABC123"
 
 test_config = """\
 [main]
@@ -47,7 +47,7 @@ hbar = 2
 shots = 99
 user_email = "{}"
 """.format(
-    SOME_API_KEY
+    DUMMY_EMAIL
 )
 
 
@@ -154,7 +154,7 @@ class TestHQSDevice:
         """Tests that the device is properly initialized."""
 
         dev = HQSDevice(
-            num_wires, DUMMY_MACHINE, shots, user_email=SOME_API_KEY, retry_delay=retry_delay
+            num_wires, DUMMY_MACHINE, shots, user_email=DUMMY_EMAIL, retry_delay=retry_delay
         )
 
         assert dev.num_wires == num_wires
@@ -170,12 +170,12 @@ class TestHQSDevice:
         assert dev._results is None
         assert dev._samples is None
         assert dev.BASE_HOSTNAME == BASE_HOSTNAME
-        assert dev._user == SOME_API_KEY
+        assert dev._user == DUMMY_EMAIL
 
     def test_reset(self):
         """Tests that the ``reset`` method corretly resets data."""
 
-        dev = HQSDevice(3, shots=10, machine=DUMMY_MACHINE, user_email=SOME_API_KEY)
+        dev = HQSDevice(3, shots=10, machine=DUMMY_MACHINE, user_email=DUMMY_EMAIL)
 
         dev._results = ["00"] * 10
         dev._samples = np.zeros((10, 3))
@@ -190,7 +190,7 @@ class TestHQSDevice:
     def test_retry_delay(self):
         """Tests that the ``retry_delay`` property can be set manually."""
 
-        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=SOME_API_KEY, retry_delay=2.5)
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=DUMMY_EMAIL, retry_delay=2.5)
         assert dev.retry_delay == 2.5
 
         dev.retry_delay = 1.0
@@ -202,7 +202,7 @@ class TestHQSDevice:
     def test_set_api_configs(self):
         """Tests that the ``set_api_configs`` method properly (re)sets the API configs."""
 
-        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=SOME_API_KEY)
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=DUMMY_EMAIL)
         new_user = "XYZ789"
         dev._user = new_user
         dev.BASE_HOSTNAME = "https://server.someaddress.com"
@@ -215,7 +215,7 @@ class TestHQSDevice:
     def test_get_job_submission_header(self, monkeypatch):
         """Tests that the ``get_job_submission_header`` method properly returns
         the correct header."""
-        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=SOME_API_KEY)
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=DUMMY_EMAIL)
         SOME_ACCESS_TOKEN = "XYZ789"
         monkeypatch.setattr(dev, "get_valid_access_token", lambda: SOME_ACCESS_TOKEN)
 
@@ -228,7 +228,7 @@ class TestHQSDevice:
     def test_get_job_retrieval_header(self, monkeypatch):
         """Tests that the ``get_job_retrieval_header`` method properly returns
         the correct header."""
-        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=SOME_API_KEY)
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=DUMMY_EMAIL)
         SOME_ACCESS_TOKEN = "XYZ789"
         monkeypatch.setattr(dev, "get_valid_access_token", lambda: SOME_ACCESS_TOKEN)
 
@@ -240,7 +240,7 @@ class TestHQSDevice:
     def test_submit_circuit_method(self, monkeypatch):
         """Tests that the ``_submit_circuit`` method sends a request adhering
         to the Honeywell API specs."""
-        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=SOME_API_KEY)
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=DUMMY_EMAIL)
         SOME_ACCESS_TOKEN = "XYZ789"
         monkeypatch.setattr(dev, "get_valid_access_token", lambda: SOME_ACCESS_TOKEN)
 
@@ -276,7 +276,7 @@ class TestHQSDevice:
     def test_login(self, monkeypatch):
         """Tests that an access token and a refresh token are returned if the
         _login method was successful."""
-        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=SOME_API_KEY)
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=DUMMY_EMAIL)
 
         mock_response = MockResponseWithTokens()
         monkeypatch.setattr(requests, "post", lambda *args, **kwargs: mock_response)
@@ -289,7 +289,7 @@ class TestHQSDevice:
     def test_login_raises(self, monkeypatch):
         """Tests that an error is raised if the _login method was
         unsuccessful."""
-        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=SOME_API_KEY)
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=DUMMY_EMAIL)
 
         mock_response = MockResponseUnsuccessfulRequest()
         monkeypatch.setattr(requests, "post", lambda *args, **kwargs: mock_response)
@@ -301,7 +301,7 @@ class TestHQSDevice:
     def test_refresh_access_token(self, monkeypatch):
         """Tests that _refresh_access_token returns an access token for a
         successful request."""
-        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=SOME_API_KEY)
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=DUMMY_EMAIL)
 
         mock_response = MockResponseWithTokens()
         monkeypatch.setattr(requests, "post", lambda *args, **kwargs: mock_response)
@@ -312,7 +312,7 @@ class TestHQSDevice:
     def test_refresh_access_token_raises(self, monkeypatch):
         """Tests that _refresh_access_token raises an error for a
         unsuccessful request."""
-        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=SOME_API_KEY)
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=DUMMY_EMAIL)
 
         mock_response = MockResponseUnsuccessfulRequest()
         monkeypatch.setattr(requests, "post", lambda *args, **kwargs: mock_response)
@@ -323,7 +323,7 @@ class TestHQSDevice:
     def test_get_valid_access_token_use_stored(self):
         """Test that the get_valid_access_token uses a stored token if it
         exists and it's not expired."""
-        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=SOME_API_KEY)
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=DUMMY_EMAIL)
         valid_time = now.replace(now.year + 1)
         token = jwt.encode({"exp": valid_time}, "secret")
         dev._access_token = token
@@ -336,7 +336,7 @@ class TestHQSDevice:
     ):
         """Test that the get_valid_access_token returns a new access and
         refresh tokens by logging in."""
-        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=SOME_API_KEY)
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=DUMMY_EMAIL)
 
         if access_token_expiry:
             # Set the token to an outdated token
@@ -357,7 +357,7 @@ class TestHQSDevice:
     def test_get_valid_access_token_using_refresh_token(self, access_token_expiry, monkeypatch):
         """Test that the get_valid_access_token returns a new access token by
         refreshing using the refresh token."""
-        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=SOME_API_KEY)
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=DUMMY_EMAIL)
 
         if access_token_expiry:
             # Set the token to an outdated token
@@ -377,7 +377,7 @@ class TestHQSDevice:
     ):
         """Test that the get_valid_access_token returns a new access token by
         refreshing using the refresh token."""
-        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=SOME_API_KEY)
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=DUMMY_EMAIL)
 
         if access_token_expiry:
             # Set the token to an outdated token
@@ -395,7 +395,7 @@ class TestHQSDevice:
     def test_query_results(self, monkeypatch):
         """Tests that the ``_query_results`` method sends a request adhering to
         the Honeywell API specs."""
-        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=SOME_API_KEY, retry_delay=0.1)
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=DUMMY_EMAIL, retry_delay=0.1)
         SOME_ACCESS_TOKEN = "XYZ789"
         monkeypatch.setattr(dev, "get_valid_access_token", lambda: SOME_ACCESS_TOKEN)
 
@@ -427,7 +427,7 @@ class TestHQSDevice:
     def test_query_results_expected_response(self, monkeypatch):
         """Tests that using the ``_query_results`` method an expected response
         is gathered."""
-        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=SOME_API_KEY, retry_delay=0.01)
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=DUMMY_EMAIL, retry_delay=0.01)
         SOME_ACCESS_TOKEN = "XYZ789"
         monkeypatch.setattr(dev, "get_valid_access_token", lambda: SOME_ACCESS_TOKEN)
 
@@ -444,7 +444,7 @@ class TestHQSDevice:
         """Tests that an error is thrown with the device is created without
         a valid API token."""
 
-        monkeypatch.setenv("HQS_TOKEN", "")
+        monkeypatch.setenv("HQS_USER", "")
         monkeypatch.setenv("PENNYLANE_CONF", "")
         monkeypatch.setattr("os.curdir", tmpdir.join("folder_without_a_config_file"))
 
@@ -542,7 +542,7 @@ class TestHQSDevice:
     def test_generate_samples(self, results, indices):
         """Tests that the generate_samples function of HQSDevice provides samples in
         the correct format expected by PennyLane."""
-        dev = HQSDevice(3, machine=DUMMY_MACHINE, shots=10, user_email=SOME_API_KEY)
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, shots=10, user_email=DUMMY_EMAIL)
         dev._results = results
         res = dev.generate_samples()
         expected_array = np.stack([np.ravel(indices)] * 10)
@@ -556,7 +556,7 @@ class TestHQSDeviceIntegration:
     def test_invalid_op_exception(self):
         """Tests whether an exception is raised if the circuit is
         passed an unsupported operation."""
-        dev = HQSDevice(2, machine=DUMMY_MACHINE, user_email=SOME_API_KEY)
+        dev = HQSDevice(2, machine=DUMMY_MACHINE, user_email=DUMMY_EMAIL)
 
         class DummyOp(qml.operation.Operation):
             num_params = 0
@@ -581,7 +581,7 @@ class TestHQSDeviceIntegration:
             wires=num_wires,
             machine=DUMMY_MACHINE,
             shots=shots,
-            user_email=SOME_API_KEY,
+            user_email=DUMMY_EMAIL,
         )
 
         assert dev.num_wires == num_wires
@@ -596,13 +596,13 @@ class TestHQSDeviceIntegration:
         assert dev._results is None
         assert dev._samples is None
         assert dev.BASE_HOSTNAME == BASE_HOSTNAME
-        assert dev._user == SOME_API_KEY
+        assert dev._user == DUMMY_EMAIL
 
-    def test_user_not_found_error(self, monkeypatch, tmpdir):
-        """Tests that an error is thrown with the device is created without
-        a valid API token."""
+    def test_user_not_found_error_login(self, monkeypatch, tmpdir):
+        """Tests that an error is thrown with the device if no user name was
+        specified before a login."""
 
-        monkeypatch.setenv("HQS_TOKEN", "")
+        monkeypatch.setenv("HQS_USER", "")
         monkeypatch.setenv("PENNYLANE_CONF", "")
         monkeypatch.setattr("os.curdir", tmpdir.join("folder_without_a_config_file"))
 
@@ -627,12 +627,12 @@ class TestHQSDeviceIntegration:
         dev = qml.device("honeywell.hqs", wires=2, machine=DUMMY_MACHINE)
 
         assert dev.shots == 99
-        assert dev._user == SOME_API_KEY
+        assert dev._user == DUMMY_EMAIL
 
     def test_device_gets_user_default_config_directory(self, monkeypatch, tmpdir):
         """Tests that the device gets an api key that is stored in the default
         config directory."""
-        monkeypatch.setenv("HQS_TOKEN", "")
+        monkeypatch.setenv("HQS_USER", "")
         monkeypatch.setenv("PENNYLANE_CONF", "")
 
         config_dir = tmpdir.mkdir("pennylane")  # fake default config directory
@@ -648,12 +648,12 @@ class TestHQSDeviceIntegration:
 
         dev = qml.device("honeywell.hqs", wires=2, machine=DUMMY_MACHINE)
 
-        assert dev._user == SOME_API_KEY
+        assert dev._user == DUMMY_EMAIL
 
     def test_device_gets_user_pennylane_conf_env_var(self, monkeypatch, tmpdir):
         """Tests that the device gets an api key via the PENNYLANE_CONF
         environment variable."""
-        monkeypatch.setenv("HQS_TOKEN", "")
+        monkeypatch.setenv("HQS_USER", "")
 
         filepath = tmpdir.join("config.toml")
         filepath.write(test_config)
@@ -666,15 +666,15 @@ class TestHQSDeviceIntegration:
 
         dev = qml.device("honeywell.hqs", wires=2, machine=DUMMY_MACHINE)
 
-        assert dev._user == SOME_API_KEY
+        assert dev._user == DUMMY_EMAIL
 
     def test_device_gets_user_hqs_token_env_var(self, monkeypatch):
-        """Tests that the device gets an api key that is stored in HQS_TOKEN
+        """Tests that the device gets an api key that is stored in HQS_USER
         environment variable."""
 
-        NEW_API_KEY = SOME_API_KEY + "XYZ987"
+        NEW_API_KEY = DUMMY_EMAIL + "XYZ987"
         monkeypatch.setenv("PENNYLANE_CONF", "")
-        monkeypatch.setenv("HQS_USER", SOME_API_KEY + "XYZ987")
+        monkeypatch.setenv("HQS_USER", DUMMY_EMAIL + "XYZ987")
 
         dev = qml.device("honeywell.hqs", wires=2, machine=DUMMY_MACHINE)
 
@@ -690,7 +690,7 @@ class TestHQSDeviceIntegration:
             machine=DUMMY_MACHINE,
             shots=10,
             retry_delay=0.01,
-            user_email=SOME_API_KEY,
+            user_email=DUMMY_EMAIL,
         )
 
         @qml.qnode(dev)
@@ -720,7 +720,7 @@ class TestHQSDeviceIntegration:
             machine=DUMMY_MACHINE,
             shots=10,
             retry_delay=0.01,
-            user_email=SOME_API_KEY,
+            user_email=DUMMY_EMAIL,
         )
 
         @qml.qnode(dev)
@@ -752,7 +752,7 @@ class TestHQSDeviceIntegration:
             machine=DUMMY_MACHINE,
             shots=10,
             retry_delay=0.01,
-            user_email=SOME_API_KEY,
+            user_email=DUMMY_EMAIL,
         )
 
         @qml.qnode(dev)
@@ -787,7 +787,7 @@ class TestHQSDeviceIntegration:
             machine=DUMMY_MACHINE,
             shots=10,
             retry_delay=0.01,
-            user_email=SOME_API_KEY,
+            user_email=DUMMY_EMAIL,
         )
 
         @qml.qnode(dev)
@@ -838,7 +838,7 @@ class TestHQSDeviceIntegration:
             machine=DUMMY_MACHINE,
             shots=10,
             retry_delay=0.01,
-            user_email=SOME_API_KEY,
+            user_email=DUMMY_EMAIL,
         )
 
         # bit flip circuit
