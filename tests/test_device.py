@@ -629,8 +629,8 @@ class TestHQSDeviceIntegration:
         assert dev.shots == 99
         assert dev._user == DUMMY_EMAIL
 
-    def test_device_gets_user_default_config_directory(self, monkeypatch, tmpdir):
-        """Tests that the device gets an api key that is stored in the default
+    def test_device_gets_email_default_config_directory(self, monkeypatch, tmpdir):
+        """Tests that the device gets a user email that is stored in the default
         config directory."""
         monkeypatch.setenv("HQS_USER", "")
         monkeypatch.setenv("PENNYLANE_CONF", "")
@@ -650,8 +650,8 @@ class TestHQSDeviceIntegration:
 
         assert dev._user == DUMMY_EMAIL
 
-    def test_device_gets_user_pennylane_conf_env_var(self, monkeypatch, tmpdir):
-        """Tests that the device gets an api key via the PENNYLANE_CONF
+    def test_device_gets_email_pennylane_conf_env_var(self, monkeypatch, tmpdir):
+        """Tests that the device gets an email via the PENNYLANE_CONF
         environment variable."""
         monkeypatch.setenv("HQS_USER", "")
 
@@ -668,17 +668,17 @@ class TestHQSDeviceIntegration:
 
         assert dev._user == DUMMY_EMAIL
 
-    def test_device_gets_user_hqs_token_env_var(self, monkeypatch):
-        """Tests that the device gets an api key that is stored in HQS_USER
+    def test_device_gets_email_hqs_token_env_var(self, monkeypatch):
+        """Tests that the device gets an email that is stored in HQS_USER
         environment variable."""
 
-        NEW_API_KEY = DUMMY_EMAIL + "XYZ987"
+        NEW_EMAIL = DUMMY_EMAIL + "XYZ987"
         monkeypatch.setenv("PENNYLANE_CONF", "")
         monkeypatch.setenv("HQS_USER", DUMMY_EMAIL + "XYZ987")
 
         dev = qml.device("honeywell.hqs", wires=2, machine=DUMMY_MACHINE)
 
-        assert dev._user == NEW_API_KEY
+        assert dev._user == NEW_EMAIL
 
     def test_executes_with_online_api(self, monkeypatch):
         """Tests that a PennyLane QNode successfully executes with a
