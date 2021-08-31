@@ -41,5 +41,5 @@ device argument or environment variable
 <https://pennylane.readthedocs.io/en/stable/introduction/configuration.html>`_.
 Specifically, the variable ``HQS_USER`` or the ``user_email`` device argument
 must contain a valid email address for Honeywell's online platform. Upon a
-first time log-in and after 30 days of a successful log-ing, a prompt will ask
+first time login and after 30 days of a successful login, a prompt will ask
 for the password associated with the user email.
