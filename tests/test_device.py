@@ -26,7 +26,7 @@ import pennylane as qml
 import numpy as np
 
 import pennylane_honeywell
-from pennylane_honeywell.device import HQSDevice, InvalidJWTError, RequestFailedError
+from pennylane_honeywell.device import HQSDevice, InvalidJWTError, RequestFailedError, ExpiredRefreshTokenError
 from pennylane_honeywell import __version__
 
 API_HEADER_KEY = "x-api-key"
@@ -139,7 +139,6 @@ class MockResponseUnsuccessfulRequest:
 
     def json(self):
         return self.mock_post_response
-
 
 now = datetime.datetime.now()
 
@@ -308,6 +307,32 @@ class TestHQSDevice:
 
         access_token = dev._refresh_access_token()
         assert access_token == MOCK_ACCESS_TOKEN
+
+    @pytest.mark.parametrize("code", [403, 400])
+    def test_refresh_access_token_raises_for_expired(self, monkeypatch, code):
+        """Tests that _refresh_access_token raises an error for an
+        expired refresh token."""
+        dev = HQSDevice(3, machine=DUMMY_MACHINE, user_email=DUMMY_EMAIL)
+
+        class MockResponseForExpired:
+            def __init__(self):
+
+                self.status_code = code
+                self.mock_post_response = {
+                    "status_code": str(code),
+                    "code": "Not 200",
+                    "detail": "Mock error for refresh.",
+                    "meta": "Something went wrong.",
+                }
+
+            def json(self):
+                return self.mock_post_response
+
+        mock_response = MockResponseForExpired()
+        monkeypatch.setattr(requests, "post", lambda *args, **kwargs: mock_response)
+
+        with pytest.raises(ExpiredRefreshTokenError, match="Invalid refresh token was used."):
+            dev._refresh_access_token()
 
     def test_refresh_access_token_raises(self, monkeypatch):
         """Tests that _refresh_access_token raises an error for a

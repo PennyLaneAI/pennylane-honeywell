@@ -71,6 +71,9 @@ class RequestFailedError(Exception):
 class InvalidJWTError(Exception):
     """Raised when the returned JWT token is invalid."""
 
+class ExpiredRefreshTokenError(Exception):
+    """Raised when a refresh token used to get a new access token is
+    expired."""
 
 class HQSDevice(QubitDevice):
     r"""Honeywell Quantum Services device for PennyLane.
@@ -268,12 +271,14 @@ class HQSDevice(QubitDevice):
         Returns:
             str: a formatted version of the response
         """
-        body = response.json()
-        status = body.get("status_code", "")
-        code = (body.get("code", ""),)
-        detail = (body.get("detail", ""),)
-        meta = (body.get("meta", ""),)
-        return f"{status} ({code}): {detail} ({meta})"
+        request_code = getattr(response, "status_code", "")
+        reason = getattr(response, "reason", "")
+        response_text = getattr(response, "text", '{}')
+        text = json.loads(response_text)
+        error_code = text.get("error", {}).get("code", "")
+        error_reason = text.get("error", {}).get("text", "")
+        return f"Request {reason} with code {request_code}. \n"\
+               f"Error code {error_code} with reason: {error_reason}"
 
     def _refresh_access_token(self):
         """Sends a request to refresh the access token using the stored refresh
@@ -294,6 +299,9 @@ class HQSDevice(QubitDevice):
 
         if response.status_code == 200:
             return response.json()["id-token"]
+
+        elif response.status_code in (400, 403):
+            raise ExpiredRefreshTokenError("Invalid refresh token was used.")
 
         raise RequestFailedError(
             f"Failed to get access token: {self._format_error_message(response)}"
@@ -323,14 +331,16 @@ class HQSDevice(QubitDevice):
             RequestFailedError: if the request failed
         """
         if self._access_token is None or self.token_is_expired(self._access_token):
+            if self._refresh_token is not None:
+                try:
+                    self._access_token = self._refresh_access_token()
+                    self.save_tokens(self._access_token)
+                except ExpiredRefreshTokenError:
+                    self._refresh_token is None
 
-            if self._refresh_token is None or self.token_is_expired(self._refresh_token):
+            if self._refresh_token is None:
                 self._access_token, self._refresh_token = self._login()
                 self.save_tokens(self._access_token, refresh_token=self._refresh_token)
-
-            else:
-                self._access_token = self._refresh_access_token()
-                self.save_tokens(self._access_token)
 
         return self._access_token
 
