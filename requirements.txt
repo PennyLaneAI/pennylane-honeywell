@@ -1,2 +1,4 @@
 git+https://github.com/PennyLaneAI/pennylane.git@master
 requests
+pyjwt
+toml
