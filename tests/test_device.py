@@ -653,7 +653,7 @@ class TestHQSDeviceIntegration:
         assert dev._user == DUMMY_EMAIL
 
     def test_user_not_found_error_login(self, monkeypatch, tmpdir):
-        """Tests that an error is thrown with the device if no user name was
+        """Tests that an error is thrown with the device if no user email was
         specified before a login."""
 
         monkeypatch.setenv("HQS_USER", "")
