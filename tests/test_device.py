@@ -442,7 +442,9 @@ class TestHQSDevice:
         some_refresh_token = 111111
         monkeypatch.setattr(dev, "_login", lambda *args, **kwargs: (some_token, some_refresh_token))
 
+        # The access and refresh token are set according to the output of _login
         assert dev.get_valid_access_token() == some_token
+        assert dev._refresh_token == some_refresh_token
 
     def test_query_results(self, monkeypatch):
         """Tests that the ``_query_results`` method sends a request adhering to
