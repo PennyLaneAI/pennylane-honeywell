@@ -192,7 +192,7 @@ class HQSDevice(QubitDevice):
         """
         try:
             token_expiry_time = jwt.decode(
-                token, options={"verify_signature": False}, algorithms=["RS256"]
+                token, verify=False, algorithms=["RS256"]
             )["exp"]
         except jwt.DecodeError:
             # Some error happened: the token is invalid
