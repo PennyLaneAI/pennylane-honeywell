@@ -1,18 +1,15 @@
-# Release 0.16.0-dev
-
-### New features
-
-### Improvements
-
-### Breaking changes
+# Release 0.16.0
 
 ### Bug fixes
 
-### Documentation
+* Changed to the new API used by Honeywell when sending jobs.
+  [(#17)](https://github.com/PennyLaneAI/pennylane-honeywell/pull/17)
 
 ### Contributors
 
 This release contains contributions from (in alphabetical order):
+
+Antal Száva, Theodor Isacsson
 
 ---
 
