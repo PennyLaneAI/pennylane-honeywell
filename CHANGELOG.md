@@ -1,4 +1,4 @@
-# Release 0.19.0-dev
+# Release 0.23.0-dev
 
 ### New features since last release
 
@@ -10,9 +10,15 @@
 
 ### Bug fixes
 
+* Updated a PennyLane import in the Honeywell device following a path change in
+  PennyLane core.
+  [(#XX)](https://github.com/PennyLaneAI/pennylane-honeywell/pull/XX)
+
 ### Contributors
 
 This release contains contributions from (in alphabetical order):
+
+Antal Száva
 
 ---
 
