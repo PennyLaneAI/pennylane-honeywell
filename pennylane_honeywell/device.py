@@ -31,7 +31,7 @@ import pennylane as qml
 import requests
 import toml
 from pennylane import DeviceError, QubitDevice
-from pennylane.operation import Sample
+from pennylane.measurements import Sample
 
 from ._version import __version__
 
