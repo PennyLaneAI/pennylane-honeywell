@@ -12,7 +12,7 @@
 
 * Updated a PennyLane import in the Honeywell device following a path change in
   PennyLane core.
-  [(#XX)](https://github.com/PennyLaneAI/pennylane-honeywell/pull/XX)
+  [(#22)](https://github.com/PennyLaneAI/pennylane-honeywell/pull/22)
 
 ### Contributors
 
