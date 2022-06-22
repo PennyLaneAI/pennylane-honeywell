@@ -1,20 +1,4 @@
-appdirs
-autograd
-autoray
-cachetools
-certifi
-charset-normalizer
-future
-idna
-networkx
-ninja
-numpy
 PennyLane
-PennyLane-Lightning
 PyJWT
 requests
-retworkx
-scipy
-semantic-version==2.6.0   # Pinning as per PennyLane's setup.py file
 toml
-urllib3
