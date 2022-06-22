@@ -1,0 +1,4 @@
+PennyLane
+PyJWT
+requests
+toml
