@@ -9,8 +9,8 @@ idna==3.3
 networkx==2.8
 ninja==1.10.2.3
 numpy==1.22.3
-PennyLane==0.22.2
-PennyLane-Lightning==0.22.1
+PennyLane==0.24.0
+PennyLane-Lightning==0.24.0
 PyJWT==2.3.0
 requests==2.27.1
 retworkx==0.11.0
