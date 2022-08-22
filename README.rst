@@ -15,7 +15,7 @@ PennyLane-Honeywell Plugin
 
 .. image:: https://img.shields.io/readthedocs/pennylane-honeywell.svg?logo=read-the-docs&style=flat-square
     :alt: Read the Docs
-    :target: https://pennylane-honeywell.readthedocs.io
+    :target: https://docs.pennylane.ai/projects/honeywell
 
 .. image:: https://img.shields.io/pypi/v/PennyLane-honeywell.svg?style=flat-square
     :alt: PyPI
@@ -43,7 +43,7 @@ ion-trap quantum computing hardware over the cloud.
 
 .. header-end-inclusion-marker-do-not-remove
 
-The plugin documentation can be found here: `PennyLane-Honeywell <https://pennylane-honeywell.readthedocs.io/en/latest/>`__.
+The plugin documentation can be found here: `PennyLane-Honeywell <https://docs.pennylane.ai/projects/honeywell>`__.
 
 Features
 ========
