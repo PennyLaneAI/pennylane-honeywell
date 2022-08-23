@@ -13,9 +13,9 @@ PennyLane-Honeywell Plugin
     :alt: CodeFactor Grade
     :target: https://www.codefactor.io/repository/github/pennylaneai/pennylane-honeywell
 
-.. image:: https://img.shields.io/readthedocs/pennylane-honeywell.svg?logo=read-the-docs&style=flat-square
+.. image:: https://readthedocs.com/projects/xanaduai-pennylane-honeywell/badge/?version=latest&style=flat-square
     :alt: Read the Docs
-    :target: https://pennylane-honeywell.readthedocs.io
+    :target: https://docs.pennylane.ai/projects/honeywell
 
 .. image:: https://img.shields.io/pypi/v/PennyLane-honeywell.svg?style=flat-square
     :alt: PyPI
