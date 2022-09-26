@@ -15,7 +15,7 @@ Devices
 
 PennyLane-Honeywell provides Honeywell Quantum Solutions hardware devices for PennyLane:
 
-.. devicegalleryitem::
+.. title-card::
     :name: 'honeywell.hqs'
     :description: Honeywell Quantum Solutions cloud ion-trap hardware.
     :link: devices.html#hqs
