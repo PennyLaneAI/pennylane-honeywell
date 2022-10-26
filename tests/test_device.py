@@ -165,7 +165,6 @@ class TestHQSDevice:
         assert dev.num_wires == num_wires
         assert dev.shots == shots
         assert dev.retry_delay == retry_delay
-        assert dev.analytic == False
         assert dev.data == {
             "machine": DUMMY_MACHINE,
             "language": "OPENQASM 2.0",
@@ -640,7 +639,6 @@ class TestHQSDeviceIntegration:
 
         assert dev.num_wires == num_wires
         assert dev.shots == shots
-        assert dev.analytic == False
         assert dev.data == {
             "machine": DUMMY_MACHINE,
             "language": "OPENQASM 2.0",
