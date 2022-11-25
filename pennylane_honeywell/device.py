@@ -476,7 +476,7 @@ class HQSDevice(QubitDevice):
         self._samples = self.generate_samples()
 
         # compute the required statistics
-        results = self.statistics(tape.observables)
+        results = self.statistics(tape)
 
         # Ensures that a combination with sample does not put
         # expvals and vars in superfluous arrays
