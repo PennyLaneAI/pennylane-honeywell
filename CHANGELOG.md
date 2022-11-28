@@ -6,6 +6,10 @@
 
 ### Improvements
 
+* With the introduction of custom measurement classes, all the `MeasurementProcess.return_type`
+  checks have been changed by `isinstance` checks.
+  [(#36)](https://github.com/PennyLaneAI/pennylane-honeywell/pull/36)
+
 ### Documentation
 
 ### Bug fixes
@@ -13,8 +17,10 @@
 ### Contributors
 
 This release contains contributions from (in alphabetical order):
+Albert Mitjans-Coma
 
 ---
+
 # Release 0.23.0
 
 ### Bug fixes
@@ -97,6 +103,7 @@ Maria Schuld
 Initial public release.
 
 ### Contributors
+
 This release contains contributions from:
 
 Nathan Killoran
