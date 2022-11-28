@@ -480,7 +480,7 @@ class HQSDevice(QubitDevice):
 
         # Ensures that a combination with sample does not put
         # expvals and vars in superfluous arrays
-        all_sampled = all(obs.return_type is Sample for obs in tape.observables)
+        all_sampled = all(isinstance(obs, Sample) for obs in tape.observables)
         if tape.is_sampled and not all_sampled:
             return self._asarray(results, dtype="object")  # pragma: no cover
 
