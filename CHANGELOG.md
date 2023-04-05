@@ -1,10 +1,12 @@
-# Release 0.24.0-dev
+# Release 0.30.0-dev
 
 ### New features since last release
 
 ### Breaking changes
 
 ### Improvements
+
+* Updated the plugin to be compatible with the new PennyLane return type system.
 
 ### Documentation
 
