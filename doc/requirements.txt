@@ -18,7 +18,7 @@ ninja==1.10.2.3
 numpy==1.22.3
 packaging==21.3
 PennyLane @ git+https://github.com/PennyLaneAI/pennylane.git#egg=pennylane
-PennyLane-Lightning @ git+https://github.com/PennyLaneAI/pennylane-lightning.git#egg=PennyLane-Lightning
+PennyLane-Lightning>=0.28
 Pygments==2.11.2
 PyJWT==2.4.0
 pyparsing==3.0.8
