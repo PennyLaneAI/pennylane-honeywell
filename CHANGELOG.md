@@ -7,6 +7,7 @@
 ### Improvements
 
 * Updated the plugin to be compatible with the new PennyLane return type system.
+  [(#39)](https://github.com/PennyLaneAI/pennylane-honeywell/pull/39)
 
 ### Documentation
 
@@ -15,6 +16,8 @@
 ### Contributors
 
 This release contains contributions from (in alphabetical order):
+
+Mudit Pandey
 
 ---
 # Release 0.23.0

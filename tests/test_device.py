@@ -882,9 +882,13 @@ class TestHQSDeviceIntegration:
             ([0, 1, 1], REF_RESULTS_011),
         ],
     )
-    def test_reference_results_correct_expval(self, wire_flip_idx, ref_result, monkeypatch):
+    @pytest.mark.parametrize("old_return", [True, False])
+    def test_reference_results_correct_expval(self, wire_flip_idx, ref_result, old_return, monkeypatch):
         """Tests that a simple circuit with a known specific result from the platform leads to the proper
         expectation value in PennyLane."""
+        if old_return:
+            qml.disable_return()
+
         num_wires = len(wire_flip_idx)
         dev = qml.device(
             "honeywell.hqs",
@@ -913,6 +917,9 @@ class TestHQSDeviceIntegration:
         res = circuit()
         expected = (-1) ** np.array(wire_flip_idx)
         assert np.all(expected == res)
+
+        if old_return:
+            qml.enable_return()
 
     def test_analytic_error(self):
         """Test that instantiating the device with `shots=None` results in an error"""

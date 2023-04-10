@@ -9,8 +9,8 @@ idna==3.3
 networkx==2.8
 ninja==1.10.2.3
 numpy==1.22.3
-PennyLane==0.24.0
-PennyLane-Lightning==0.24.0
+pennylane @ git+https://github.com/PennyLaneAI/pennylane.git#egg=pennylane
+pennylane-lightning @ git+https://github.com/PennyLaneAI/pennylane-lightning.git#PennyLane-Lightning
 PyJWT==2.4.0
 requests==2.27.1
 retworkx==0.11.0
