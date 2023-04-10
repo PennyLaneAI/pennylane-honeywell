@@ -446,7 +446,6 @@ class HQSDevice(QubitDevice):
         return job_data
 
     def execute(self, tape, **kwargs):
-
         self.check_validity(tape.operations, tape.observables)
         response = self._submit_circuit(tape)
         response.raise_for_status()
