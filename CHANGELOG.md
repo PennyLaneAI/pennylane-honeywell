@@ -4,10 +4,16 @@
 
 ### Breaking changes
 
+* Support for Python 3.7 has been removed.
+  [(#40)](https://github.com/PennyLaneAI/pennylane-honeywell/pull/40)
+
 ### Improvements
 
 * Updated the plugin to be compatible with the new PennyLane return type system.
   [(#39)](https://github.com/PennyLaneAI/pennylane-honeywell/pull/39)
+
+* Support for Python 3.11 has been added.
+  [(#40)](https://github.com/PennyLaneAI/pennylane-honeywell/pull/40)
 
 ### Documentation
 
