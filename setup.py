@@ -25,7 +25,7 @@ with open("pennylane_honeywell/_version.py") as f:
 # Avoid pinning, and use minimum version numbers
 # only where required.
 requirements = [
-    "pennylane",
+    "pennylane @ git+https://github.com/PennyLaneAI/pennylane.git",
     "requests",
     "pyjwt",
     "toml",
