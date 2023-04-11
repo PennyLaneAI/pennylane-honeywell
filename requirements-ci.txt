@@ -1,4 +1,4 @@
-PennyLane
+PennyLane @ git+https://github.com/PennyLaneAI/pennylane.git#egg=pennylane
 PyJWT
 requests
 toml
