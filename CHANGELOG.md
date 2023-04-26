@@ -1,6 +1,4 @@
-# Release 0.30.0-dev
-
-### New features since last release
+# Release 0.30.0
 
 ### Breaking changes
 
@@ -14,10 +12,6 @@
 
 * Support for Python 3.11 has been added.
   [(#40)](https://github.com/PennyLaneAI/pennylane-honeywell/pull/40)
-
-### Documentation
-
-### Bug fixes
 
 ### Contributors
 
