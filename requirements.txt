@@ -10,7 +10,7 @@ networkx==2.8
 ninja==1.10.2.3
 numpy==1.22.3
 pennylane==0.30.0
-pennylane-lightning>=0.28
+pennylane-lightning==0.30.0
 PyJWT==2.4.0
 requests==2.27.1
 retworkx==0.11.0
