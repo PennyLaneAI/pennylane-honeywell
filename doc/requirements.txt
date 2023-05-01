@@ -18,7 +18,7 @@ ninja==1.10.2.3
 numpy==1.22.3
 packaging==21.3
 pennylane==0.30.0
-PennyLane-Lightning>=0.28
+PennyLane-Lightning==0.30.0
 Pygments==2.11.2
 PyJWT==2.4.0
 pyparsing==3.0.8
