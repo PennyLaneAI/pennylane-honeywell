@@ -17,7 +17,7 @@ networkx==2.8
 ninja==1.10.2.3
 numpy==1.22.3
 packaging==21.3
-pennylane>=0.30
+pennylane==0.30.0
 PennyLane-Lightning>=0.28
 Pygments==2.11.2
 PyJWT==2.4.0
