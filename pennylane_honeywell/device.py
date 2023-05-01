@@ -102,7 +102,7 @@ class HQSDevice(QubitDevice):
     """
     # pylint: disable=too-many-instance-attributes
     name = "Honeywell Quantum Solutions PennyLane plugin"
-    pennylane_requires = ">=0.15.0"
+    pennylane_requires = ">=0.30.0"
     version = __version__
     author = "Xanadu Inc."
     _capabilities = {
