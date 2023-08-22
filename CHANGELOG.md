@@ -5,7 +5,7 @@
 ### Breaking changes
 
 * Support for Python 3.8 has been removed.
-  [(#)]()
+  [(#49)](https://github.com/PennyLaneAI/pennylane-honeywell/pull/49)
 
 ### Improvements
 
