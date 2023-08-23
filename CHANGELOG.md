@@ -1,8 +1,11 @@
-# Release 0.31.0-dev
+# Release 0.32.0-dev
 
 ### New features since last release
 
 ### Breaking changes
+
+* Support for Python 3.8 has been removed.
+  [(#49)](https://github.com/PennyLaneAI/pennylane-honeywell/pull/49)
 
 ### Improvements
 
@@ -13,6 +16,8 @@
 ### Contributors
 
 This release contains contributions from (in alphabetical order):
+
+Mudit Pandey
 
 ---
 # Release 0.30.0
