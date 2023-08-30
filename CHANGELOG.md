@@ -8,7 +8,7 @@
   [(#49)](https://github.com/PennyLaneAI/pennylane-honeywell/pull/49)
 
 * The old return type system has been removed.
-  [(#)]()
+  [(#50)](https://github.com/PennyLaneAI/pennylane-honeywell/pull/50)
 
 ### Improvements
 
