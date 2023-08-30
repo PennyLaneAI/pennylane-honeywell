@@ -475,10 +475,7 @@ class HQSDevice(QubitDevice):
         self._samples = self.generate_samples()
 
         # compute the required statistics
-        if not qml.active_return():
-            results = self._statistics_legacy(tape)
-        else:
-            results = self.statistics(tape)
+        results = self.statistics(tape)
 
         # Ensures that a combination with sample does not put
         # expvals and vars in superfluous arrays
@@ -487,12 +484,6 @@ class HQSDevice(QubitDevice):
             return self._asarray(results, dtype="object")  # pragma: no cover
 
         return self._asarray(results)
-
-    def _execute_legacy(self, tape, **kwargs):
-        """Wrapper for ``execute`` to be consistent with ``QubitDevice`` for the old
-        return type."""
-        # This function just runs `execute`, which handles both the new and old return types
-        return self.execute(tape, **kwargs)
 
     def generate_samples(self):
         int_values = [int(x, 2) for x in self._results]
