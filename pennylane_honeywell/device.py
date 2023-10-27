@@ -102,7 +102,7 @@ class HQSDevice(QubitDevice):
     """
     # pylint: disable=too-many-instance-attributes
     name = "Honeywell Quantum Solutions PennyLane plugin"
-    pennylane_requires = ">=0.15.0"
+    pennylane_requires = ">=0.30.0"
     version = __version__
     author = "Xanadu Inc."
     _capabilities = {
@@ -446,7 +446,6 @@ class HQSDevice(QubitDevice):
         return job_data
 
     def execute(self, tape, **kwargs):
-
         self.check_validity(tape.operations, tape.observables)
         response = self._submit_circuit(tape)
         response.raise_for_status()
@@ -476,7 +475,7 @@ class HQSDevice(QubitDevice):
         self._samples = self.generate_samples()
 
         # compute the required statistics
-        results = self.statistics(tape.observables)
+        results = self.statistics(tape)
 
         # Ensures that a combination with sample does not put
         # expvals and vars in superfluous arrays

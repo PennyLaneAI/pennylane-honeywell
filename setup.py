@@ -24,7 +24,7 @@ with open("pennylane_honeywell/_version.py") as f:
 # Requirements should be as minimal as possible.
 # Avoid pinning, and use minimum version numbers
 # only where required.
-requirements = ["pennylane>=0.23", "requests", "pyjwt", "toml"]
+requirements = ["pennylane>=0.30", "requests", "pyjwt", "toml"]
 
 info = {
     # 'name' is the name that will be used by pip for installation
@@ -70,11 +70,9 @@ classifiers = [
     "Programming Language :: Python",
     # Make sure to specify here the versions of Python supported
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Scientific/Engineering :: Physics",
 ]

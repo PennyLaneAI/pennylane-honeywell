@@ -1,7 +1,7 @@
 PennyLane-Honeywell Plugin
 ##########################
 
-.. image:: https://img.shields.io/github/workflow/status/PennyLaneAI/pennylane-honeywell/Tests/master?logo=github&style=flat-square
+.. image:: https://img.shields.io/github/actions/workflow/status/PennyLaneAI/pennylane-honeywell/tests.yml?branch=master&logo=github&style=flat-square
     :alt: GitHub Workflow Status (branch)
     :target: https://github.com/PennyLaneAI/pennylane-honeywell/actions?query=workflow%3ATests
 
