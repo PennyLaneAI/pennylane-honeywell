@@ -1,6 +1,4 @@
-# Release 0.32.0-dev
-
-### New features since last release
+# Release 0.33.0
 
 ### Breaking changes
 
@@ -9,12 +7,6 @@
 
 * The old return type system has been removed.
   [(#50)](https://github.com/PennyLaneAI/pennylane-honeywell/pull/50)
-
-### Improvements
-
-### Documentation
-
-### Bug fixes
 
 ### Contributors
 
