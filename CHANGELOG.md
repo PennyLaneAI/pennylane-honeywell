@@ -4,6 +4,9 @@
 
 ### Improvements 🛠
 
+* Avoid using the now-deprecated `tape.is_sampled` property.
+  [(#55)](https://github.com/PennyLaneAI/pennylane-honeywell/pull/55)
+
 ### Breaking changes 💔
 
 ### Deprecations 👋
@@ -15,6 +18,8 @@
 ### Contributors ✍️
 
 This release contains contributions from (in alphabetical order):
+
+Matthew Silverman
 
 ---
 # Release 0.33.0
