@@ -5,7 +5,7 @@
 ### Improvements 🛠
 
 * Avoid using the now-deprecated `tape.is_sampled` property.
-  [(#)]()
+  [(#55)](https://github.com/PennyLaneAI/pennylane-honeywell/pull/55)
 
 ### Breaking changes 💔
 
