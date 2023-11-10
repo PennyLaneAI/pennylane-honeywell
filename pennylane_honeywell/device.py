@@ -31,7 +31,7 @@ import pennylane as qml
 import requests
 import toml
 from pennylane import DeviceError, QubitDevice
-from pennylane.measurements import Sample
+from pennylane.measurements import SampleMP, CountsMP, ClassicalShadowMP, ShadowExpvalMP
 
 from ._version import __version__
 
@@ -479,8 +479,10 @@ class HQSDevice(QubitDevice):
 
         # Ensures that a combination with sample does not put
         # expvals and vars in superfluous arrays
-        all_sampled = all(obs.return_type is Sample for obs in tape.observables)
-        if tape.is_sampled and not all_sampled:
+        sample_types = (SampleMP, CountsMP, ClassicalShadowMP, ShadowExpvalMP)
+        is_sampled = any(isinstance(m, sample_types) for m in tape.measurements)
+        all_sampled = all(isinstance(m, sample_types) for m in tape.measurements)
+        if is_sampled and not all_sampled:
             return self._asarray(results, dtype="object")  # pragma: no cover
 
         return self._asarray(results)
