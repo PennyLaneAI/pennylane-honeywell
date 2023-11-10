@@ -481,7 +481,7 @@ class HQSDevice(QubitDevice):
         # expvals and vars in superfluous arrays
         sample_types = (SampleMP, CountsMP, ClassicalShadowMP, ShadowExpvalMP)
         is_sampled = any(isinstance(m, sample_types) for m in tape.measurements)
-        all_sampled = all(isinstance(m, sample_types) for m in tape.measurements)
+        all_sampled = all(isinstance(m, SampleMP) for m in tape.measurements)
         if is_sampled and not all_sampled:
             return self._asarray(results, dtype="object")  # pragma: no cover
 
