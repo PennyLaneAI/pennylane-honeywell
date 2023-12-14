@@ -1,18 +1,64 @@
-# Release 0.24.0-dev
+# Release 0.34.0-dev
 
 ### New features since last release
 
+### Improvements 🛠
+
+* Avoid using the now-deprecated `tape.is_sampled` property.
+  [(#55)](https://github.com/PennyLaneAI/pennylane-honeywell/pull/55)
+
+### Breaking changes 💔
+
+### Deprecations 👋
+
+### Documentation 📝
+
+### Bug fixes 🐛
+
+### Contributors ✍️
+
+This release contains contributions from (in alphabetical order):
+
+Matthew Silverman
+
+---
+# Release 0.33.0
+
 ### Breaking changes
 
-### Improvements
+* Support for Python 3.8 has been removed.
+  [(#49)](https://github.com/PennyLaneAI/pennylane-honeywell/pull/49)
 
-### Documentation
-
-### Bug fixes
+* The old return type system has been removed.
+  [(#50)](https://github.com/PennyLaneAI/pennylane-honeywell/pull/50)
 
 ### Contributors
 
 This release contains contributions from (in alphabetical order):
+
+Mudit Pandey
+
+---
+# Release 0.30.0
+
+### Breaking changes
+
+* Support for Python 3.7 has been removed.
+  [(#40)](https://github.com/PennyLaneAI/pennylane-honeywell/pull/40)
+
+### Improvements
+
+* Updated the plugin to be compatible with the new PennyLane return type system.
+  [(#39)](https://github.com/PennyLaneAI/pennylane-honeywell/pull/39)
+
+* Support for Python 3.11 has been added.
+  [(#40)](https://github.com/PennyLaneAI/pennylane-honeywell/pull/40)
+
+### Contributors
+
+This release contains contributions from (in alphabetical order):
+
+Mudit Pandey
 
 ---
 # Release 0.23.0
