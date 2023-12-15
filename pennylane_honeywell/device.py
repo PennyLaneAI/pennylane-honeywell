@@ -31,7 +31,7 @@ import pennylane as qml
 import requests
 import toml
 from pennylane import DeviceError, QubitDevice
-from pennylane.measurements import Sample
+from pennylane.measurements import SampleMP, CountsMP, ClassicalShadowMP, ShadowExpvalMP
 
 from ._version import __version__
 
@@ -102,7 +102,7 @@ class HQSDevice(QubitDevice):
     """
     # pylint: disable=too-many-instance-attributes
     name = "Honeywell Quantum Solutions PennyLane plugin"
-    pennylane_requires = ">=0.15.0"
+    pennylane_requires = ">=0.30.0"
     version = __version__
     author = "Xanadu Inc."
     _capabilities = {
@@ -446,7 +446,6 @@ class HQSDevice(QubitDevice):
         return job_data
 
     def execute(self, tape, **kwargs):
-
         self.check_validity(tape.operations, tape.observables)
         response = self._submit_circuit(tape)
         response.raise_for_status()
@@ -476,12 +475,14 @@ class HQSDevice(QubitDevice):
         self._samples = self.generate_samples()
 
         # compute the required statistics
-        results = self.statistics(tape.observables)
+        results = self.statistics(tape)
 
         # Ensures that a combination with sample does not put
         # expvals and vars in superfluous arrays
-        all_sampled = all(obs.return_type is Sample for obs in tape.observables)
-        if tape.is_sampled and not all_sampled:
+        sample_types = (SampleMP, CountsMP, ClassicalShadowMP, ShadowExpvalMP)
+        is_sampled = any(isinstance(m, sample_types) for m in tape.measurements)
+        all_sampled = all(isinstance(m, SampleMP) for m in tape.measurements)
+        if is_sampled and not all_sampled:
             return self._asarray(results, dtype="object")  # pragma: no cover
 
         return self._asarray(results)

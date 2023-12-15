@@ -1,7 +1,7 @@
 PennyLane-Honeywell Plugin
 ##########################
 
-.. image:: https://img.shields.io/github/workflow/status/PennyLaneAI/pennylane-honeywell/Tests/master?logo=github&style=flat-square
+.. image:: https://img.shields.io/github/actions/workflow/status/PennyLaneAI/pennylane-honeywell/tests.yml?branch=master&logo=github&style=flat-square
     :alt: GitHub Workflow Status (branch)
     :target: https://github.com/PennyLaneAI/pennylane-honeywell/actions?query=workflow%3ATests
 
@@ -13,7 +13,7 @@ PennyLane-Honeywell Plugin
     :alt: CodeFactor Grade
     :target: https://www.codefactor.io/repository/github/pennylaneai/pennylane-honeywell
 
-.. image:: https://img.shields.io/readthedocs/pennylane-honeywell.svg?logo=read-the-docs&style=flat-square
+.. image:: https://readthedocs.com/projects/xanaduai-pennylane-honeywell/badge/?version=latest&style=flat-square
     :alt: Read the Docs
     :target: https://docs.pennylane.ai/projects/honeywell
 
