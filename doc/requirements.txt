@@ -4,7 +4,7 @@ autograd==1.4
 autoray==0.3.1
 Babel==2.9.1
 cachetools==5.0.0
-certifi==2022.12.7
+certifi==2023.7.22
 charset-normalizer==2.0.12
 docutils==0.16
 future==0.18.2
@@ -19,13 +19,13 @@ numpy==1.22.3
 packaging==21.3
 pennylane==0.30.0
 PennyLane-Lightning==0.30.0
-Pygments==2.11.2
+Pygments==2.15.0
 PyJWT==2.4.0
 pyparsing==3.0.8
 pytz==2022.1
-requests==2.27.1
+requests==2.31.0
 retworkx==0.11.0
-scipy==1.8.0
+scipy==1.10.0
 semantic-version==2.7
 snowballstemmer==2.2.0
 Sphinx==4.5.0
@@ -37,7 +37,7 @@ sphinxcontrib-jsmath==1.0.1
 sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.5
 toml==0.10.2
-urllib3==1.26.9
+urllib3==1.26.18
 # do not pin
 pennylane-sphinx-theme
 zipp==3.8.0
