@@ -19,7 +19,7 @@ numpy==1.22.3
 packaging==21.3
 pennylane==0.30.0
 PennyLane-Lightning==0.30.0
-Pygments==2.11.2
+Pygments==2.15.0
 PyJWT==2.4.0
 pyparsing==3.0.8
 pytz==2022.1
