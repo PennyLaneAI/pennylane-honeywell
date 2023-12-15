@@ -2,7 +2,7 @@ appdirs==1.4.4
 autograd==1.4
 autoray==0.3.1
 cachetools==5.0.0
-certifi==2021.10.8
+certifi==2023.7.22
 charset-normalizer==2.0.12
 future==0.18.2
 idna==3.3
@@ -12,9 +12,9 @@ numpy==1.22.3
 pennylane==0.30.0
 pennylane-lightning==0.30.0
 PyJWT==2.4.0
-requests==2.27.1
+requests==2.31.0
 retworkx==0.11.0
-scipy==1.8.0
+scipy==1.10.0
 semantic-version==2.6.0
 toml==0.10.2
-urllib3==1.26.9
+urllib3==1.26.18
