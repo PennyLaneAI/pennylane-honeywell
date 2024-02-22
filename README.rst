@@ -25,6 +25,11 @@ PennyLane-Honeywell Plugin
     :alt: PyPI - Python Version
     :target: https://pypi.org/project/PennyLane-honeywell
 
+\
+
+    **❗ This plugin will not be supported in newer versions of PennyLane. It is compatible with versions
+    of PennyLane up to and including 0.34❗**
+
 .. header-start-inclusion-marker-do-not-remove
 
 The PennyLane-Honeywell plugin provides the ability to use Honeywell Quantum Solutions' ion-trap

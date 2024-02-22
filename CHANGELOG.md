@@ -1,20 +1,14 @@
-# Release 0.35.0-dev
-
-### New features since last release
-
-### Improvements 🛠
+# Release 0.34.1
 
 ### Breaking changes 💔
 
-### Deprecations 👋
-
-### Documentation 📝
-
-### Bug fixes 🐛
+* Pin the PennyLane version to <0.35
 
 ### Contributors ✍️
 
 This release contains contributions from (in alphabetical order):
+
+Matthew Silverman
 
 ---
 # Release 0.34.0
