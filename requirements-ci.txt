@@ -1,4 +1,4 @@
-pennylane>=0.30
+pennylane>=0.30,<0.35
 PyJWT
 requests
 toml

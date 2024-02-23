@@ -100,6 +100,7 @@ class HQSDevice(QubitDevice):
             to the remote server when checking for completion of circuit
             execution.
     """
+
     # pylint: disable=too-many-instance-attributes
     name = "Honeywell Quantum Solutions PennyLane plugin"
     pennylane_requires = ">=0.30.0"
