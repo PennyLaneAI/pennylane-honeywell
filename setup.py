@@ -77,4 +77,10 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Physics",
 ]
 
+pipVersion = pkg_resources.require("pip")[0].version
+setuptoolsVersion = pkg_resources.require("setuptools")[0].version
+
+print("\n PIP Version", pipVersion, "\n")
+print("\n Setuptools Version", setuptoolsVersion, "\n")
+
 setup(classifiers=classifiers, **(info))
