@@ -6,22 +6,8 @@ jobs:
   black:
     runs-on: ubuntu-latest
     steps:
-    - uses: dorny/paths-filter@v3
-      id: filter
-      with:
-        filters: |
-          honeywell:
-            - pennylane_honeywell/**
-            - tests/**
-            - .pylintrc
-            - Makefile
-            - requirements-ci.txt
-            - requirements.txt
-            - setup.py
-
     - uses: actions/checkout@v1
     - name: Black Code Formatter
-      if: steps.filter.outputs.honeywell == 'true'
       uses: lgeiger/black-action@master
       with:
         args: "-l 100 pennylane_honeywell/ --check"
