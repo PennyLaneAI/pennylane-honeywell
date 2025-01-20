@@ -11,12 +11,11 @@ jobs:
     strategy:
       matrix:
         python-version: [3.9, '3.10', '3.11']
-    steps:      
+    steps:
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.4.1
         with:
           access_token: ${{ github.token }}
-
       - uses: actions/checkout@v1
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -34,6 +33,6 @@ jobs:
       - name: Run tests
         run: python -m pytest tests --cov=pennylane_honeywell --cov-report=term-missing --cov-report=xml -p no:warnings --tb=native
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v1.0.12
         with:
           file: ./coverage.xml
