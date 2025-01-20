@@ -50,7 +50,6 @@ jobs:
         if: steps.filter.outputs.honeywell == 'true'
         run: python -m pytest tests --cov=pennylane_honeywell --cov-report=term-missing --cov-report=xml -p no:warnings --tb=native
       - name: Upload coverage to Codecov
-        if: steps.filter.outputs.honeywell == 'true'
         uses: codecov/codecov-action@v4
         with:
           file: ./coverage.xml
