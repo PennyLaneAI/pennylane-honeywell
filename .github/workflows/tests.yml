@@ -11,28 +11,46 @@ jobs:
     strategy:
       matrix:
         python-version: [3.9, '3.10', '3.11']
-    steps:
+    steps:      
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.4.1
         with:
           access_token: ${{ github.token }}
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            honeywell:
+              - pennylane_honeywell/**
+              - tests/**
+              - .pylintrc
+              - Makefile
+              - requirements-ci.txt
+              - requirements.txt
+              - setup.py
+
       - uses: actions/checkout@v1
       - name: Set up Python
+        if: steps.filter.outputs.honeywell == 'true'
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
+        if: steps.filter.outputs.honeywell == 'true'
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements-ci.txt
           pip install wheel pytest pytest-cov pytest-mock --upgrade
       - name: Install Plugin
+        if: steps.filter.outputs.honeywell == 'true'
         run: |
           python setup.py bdist_wheel
           pip install dist/PennyLane*.whl
       - name: Run tests
+        if: steps.filter.outputs.honeywell == 'true'
         run: python -m pytest tests --cov=pennylane_honeywell --cov-report=term-missing --cov-report=xml -p no:warnings --tb=native
       - name: Upload coverage to Codecov
+        if: steps.filter.outputs.honeywell == 'true'
         uses: codecov/codecov-action@v1.0.12
         with:
           file: ./coverage.xml
