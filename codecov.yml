@@ -1,0 +1,15 @@
+ignore:
+  - "docs/*"
+
+codecov:
+  notify:
+    after_n_builds: 1
+
+comment:
+  after_n_builds: 1
+coverage:
+
+  status:
+    project:
+      default:
+        threshold: 0.02%
