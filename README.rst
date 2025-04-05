@@ -48,7 +48,7 @@ ion-trap quantum computing hardware over the cloud.
 
 .. header-end-inclusion-marker-do-not-remove
 
-The plugin documentation can be found here: `PennyLane-Honeywell <https://pennylane-honeywell.readthedocs.io/en/latest/>`__.
+The plugin documentation can be found here: `PennyLane-Honeywell <https://docs.pennylane.ai/projects/honeywell>`__.
 
 Features
 ========
