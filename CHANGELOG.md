@@ -1,5 +1,8 @@
 # Release 0.34.1
 
+### Improvement changes
+* Bumped `.readthedocs.yml` up to Ubuntu-24.04
+
 ### Breaking changes 💔
 
 * Pin the PennyLane version to <0.35
@@ -8,6 +11,7 @@
 
 This release contains contributions from (in alphabetical order):
 
+Runor Agbaire
 Matthew Silverman
 
 ---
