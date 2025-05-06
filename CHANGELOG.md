@@ -1,7 +1,7 @@
 # Release 0.34.1
 
 ### Improvement changes
-* Bumped `.readthedocs.yml` up to Ubuntu-24.04
+* Bumped `.readthedocs.yml` up to Ubuntu-24.04 [(#74)](https://github.com/PennyLaneAI/pennylane-honeywell/pull/74)
 
 ### Breaking changes 💔
 
