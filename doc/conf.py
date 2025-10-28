@@ -42,7 +42,7 @@ extensions = [
     'sphinx_automodapi.smart_resolver'
 ]
 
-intersphinx_mapping = {"https://docs.pennylane.ai/en/stable/": None}
+intersphinx_mapping = {("https://docs.pennylane.ai/en/stable/", None)}
 
 autosummary_generate = True
 autosummary_imported_members = False
